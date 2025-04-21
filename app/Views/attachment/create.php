@@ -14,7 +14,7 @@
     </div>
 <?php endif; ?>
 
-<form action="<?= base_url('/tugas/store') ?>" method="post" enctype="multipart/form-data">
+<form action="<?= base_url('/tugas/detail') ?>" method="post" enctype="multipart/form-data">
     <?= csrf_field() ?>
 
     <!-- ID Tugas -->

@@ -10,7 +10,7 @@
     <h4 class="card-title"><?= esc($group['group_name']) ?></h4>
     <p class="text-muted mb-2">Dibuat oleh:
       <strong>
-        <?= esc($group['id_user']) == session()->get('id_user') ? 'Kamu' : esc($group['creator_username'] ?? 'Pengguna lain') ?>
+        <?= esc($group['id_user']) == session()->get('id_user') ? 'username' : esc($group['creator_username'] ?? 'Pengguna lain') ?>
       </strong>
     </p>
     <?php if (!empty($group['description'])): ?>

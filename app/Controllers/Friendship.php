@@ -37,57 +37,71 @@ class Friendship extends BaseController
         $userId = session()->get('id');
         $friendId = $this->request->getPost('friend_id');
 
-        // Validasi ID tidak kosong, bukan diri sendiri, dan numerik
         if (!$friendId || !is_numeric($friendId) || $friendId == $userId) {
-            return redirect()->to('friendship/index')->with('error', 'ID teman tidak valid.');
+            return redirect()->to('/friendship')->with('error', 'ID teman tidak valid.');
         }
 
-        // Periksa apakah user tersebut ada
         $friend = $this->userModel->find($friendId);
         if (!$friend) {
-            return redirect()->to('friendship/index')->with('error', 'User dengan ID tersebut tidak ditemukan.');
+            return redirect()->to('/friendship')->with('error', 'User dengan ID tersebut tidak ditemukan.');
         }
 
-        // Periksa apakah sudah pernah mengirim permintaan atau sudah berteman
         $existing = $this->friendshipModel
-            ->where('(user_id = ' . $userId . ' AND friend_id = ' . $friendId . ') 
-                    OR (user_id = ' . $friendId . ' AND friend_id = ' . $userId . ')')
+            ->groupStart()
+                ->where('user_id', $userId)
+                ->where('friend_id', $friendId)
+            ->groupEnd()
+            ->orGroupStart()
+                ->where('user_id', $friendId)
+                ->where('friend_id', $userId)
+            ->groupEnd()
             ->first();
 
         if ($existing) {
-            if ($existing['status'] == 'pending') {
-                return redirect()->to('friendship/index')->with('info', 'Permintaan pertemanan sudah dikirim.');
+            if ($existing['status'] === 'pending') {
+                return redirect()->to('/friendship')->with('info', 'Permintaan pertemanan sudah dikirim.');
             } else {
-                return redirect()->to('friendship/index')->with('info', 'Kamu sudah berteman dengan user ini.');
+                return redirect()->to('/friendship')->with('info', 'Kamu sudah berteman dengan user ini.');
             }
         }
 
-        // Tambahkan permintaan
         $this->friendshipModel->addFriendRequest($userId, $friendId);
-        return redirect()->to('friendship/index')->with('success', 'Permintaan pertemanan berhasil dikirim.');
+        return redirect()->to('/friendship')->with('success', 'Permintaan pertemanan berhasil dikirim.');
     }
 
-    // Menyetujui Pertemanan
+    // Menerima pertemanan
     public function accept($id)
     {
+        $cek = $this->friendshipModel->find($id);
+        if (!$cek) {
+            return redirect()->to('/friendship')->with('error', 'Permintaan tidak ditemukan.');
+        }
+
         $this->friendshipModel->acceptFriendRequest($id);
-        return redirect()->to('friendship/index')->with('success', 'Permintaan pertemanan diterima.');
+        return redirect()->to('/friendship')->with('success', 'Permintaan pertemanan diterima.');
     }
 
-    // Menolak Pertemanan
+    // Menolak pertemanan
     public function decline($id)
     {
+        $cek = $this->friendshipModel->find($id);
+        if (!$cek) {
+            return redirect()->to('/friendship')->with('error', 'Permintaan tidak ditemukan.');
+        }
+
         $this->friendshipModel->declineFriendRequest($id);
-        return redirect()->to('friendship/index')->with('success', 'Permintaan pertemanan ditolak.');
+        return redirect()->to('/friendship')->with('success', 'Permintaan pertemanan ditolak.');
     }
 
     // Menghapus pertemanan
     public function remove($id)
     {
-        // Hapus pertemanan berdasarkan ID pertemanan
-        $this->friendshipModel->removeFriendById($id);
+        $cek = $this->friendshipModel->find($id);
+        if (!$cek) {
+            return redirect()->to('/friendship')->with('error', 'Pertemanan tidak ditemukan.');
+        }
 
-        return redirect()->to('friendship/index')->with('success', 'Pertemanan berhasil dihapus.');
+        $this->friendshipModel->removeFriendById($id);
+        return redirect()->to('/friendship')->with('success', 'Pertemanan berhasil dihapus.');
     }
 }
-// if this line is still there, it means I just copy paste my friend's UKK application

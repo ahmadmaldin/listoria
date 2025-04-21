@@ -1,5 +1,5 @@
-<?php
-// if this line is still there, it means I just copy paste my friend's UKK application
+<?php 
+
 namespace App\Models;
 
 use CodeIgniter\Model;
@@ -22,15 +22,17 @@ class FriendshipModel extends Model
         return $this->insert($data);
     }
 
-    // Mendapatkan daftar teman (yang sudah accepted), dengan informasi nama dari tabel user
+    // Mendapatkan daftar teman (yang sudah accepted), dengan informasi username dan photo dari tabel user
     public function getFriends($userId)
     {
-        return $this->select('user.nama, user.foto, friendships.*')
-            ->join('user', 'user.id = IF(friendships.user_id = ' . $userId . ', friendships.friend_id, friendships.user_id)')
-            ->where('friendships.status', 'accepted')
-            ->groupStart()
+        return $this->select('u.username, u.photo, friendships.*')
+            ->join('user u', 'u.id_user = friendships.friend_id', 'left') // Ganti id menjadi id_user
             ->where('friendships.user_id', $userId)
-            ->orWhere('friendships.friend_id', $userId)
+            ->where('friendships.status', 'accepted')
+            ->orGroupStart()
+                ->join('user u2', 'u2.id_user = friendships.user_id', 'left') // Ganti id menjadi id_user
+                ->where('friendships.friend_id', $userId)
+                ->where('friendships.status', 'accepted')
             ->groupEnd()
             ->findAll();
     }
@@ -38,22 +40,22 @@ class FriendshipModel extends Model
     // Mendapatkan daftar permintaan masuk yang pending (dikirim ke user login)
     public function getFriendRequests($userId)
     {
-        return $this->select('user.nama, user.foto, friendships.*')
-            ->join('user', 'user.id = friendships.user_id')
+        return $this->select('user.username, user.photo, friendships.*')
+            ->join('user', 'user.id_user = friendships.user_id')
             ->where('friendships.friend_id', $userId)
             ->where('friendships.status', 'pending')
             ->findAll();
     }
 
+    // Mendapatkan daftar permintaan yang telah dikirim oleh user (pending)
     public function getSentRequests($userId)
     {
-        return $this->select('user.nama, user.foto, friendships.*')
-            ->join('user', 'user.id = friendships.friend_id')
+        return $this->select('user.username, user.photo, friendships.*')
+            ->join('user', 'user.id_user = friendships.friend_id')
             ->where('friendships.user_id', $userId)
             ->where('friendships.status', 'pending')
             ->findAll();
     }
-
 
     // Menerima permintaan pertemanan
     public function acceptFriendRequest($requestId)

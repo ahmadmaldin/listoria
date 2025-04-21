@@ -12,6 +12,7 @@
                         <th>#</th>
                         <th>Tugas</th>
                         <th>Tanggal</th>
+                        <th>Sisa Waktu</th>
                         <th>Status</th>
                         <th class="text-center">Aksi</th>
                     </tr>
@@ -21,7 +22,37 @@
                         <tr>
                             <td><?= esc($item['id']) ?></td>
                             <td><?= esc($item['tugas']) ?></td>
-                            <td><?= esc($item['tanggal']) ?></td>
+                            <td><?= esc($item['tanggal']) ?> <?= esc($item['waktu']) ?></td>
+                            <td>
+                                <?php
+                                    $deadline = strtotime($item['tanggal'] . ' ' . $item['waktu']);
+                                    $now = time();
+                                    $selisih = $deadline - $now;
+
+                                    if ($selisih > 0) {
+                                        $hari = floor($selisih / 86400);
+                                        $jam = floor(($selisih % 86400) / 3600);
+                                        $menit = floor(($selisih % 3600) / 60);
+
+                                        echo '<span class="badge bg-info text-dark">⏳ ';
+                                        if ($hari > 0) echo $hari . 'h ';
+                                        if ($jam > 0) echo $jam . 'j ';
+                                        if ($menit > 0) echo $menit . 'm ';
+                                        echo 'lagi</span>';
+                                    } else {
+                                        $selisih = abs($selisih);
+                                        $hari = floor($selisih / 86400);
+                                        $jam = floor(($selisih % 86400) / 3600);
+                                        $menit = floor(($selisih % 3600) / 60);
+
+                                        echo '<span class="badge bg-danger">⚠️ Telat ';
+                                        if ($hari > 0) echo $hari . 'h ';
+                                        if ($jam > 0) echo $jam . 'j ';
+                                        if ($menit > 0) echo $menit . 'm ';
+                                        echo '</span>';
+                                    }
+                                ?>
+                            </td>
                             <td>
                                 <span class="badge bg-label-primary"><?= esc($item['status']) ?></span>
                             </td>

@@ -28,7 +28,7 @@ $routes->get('/dashboard', 'Home::index', $authFilter);
 $routes->get('about', 'Home::about', $allRole);
 
 // tugas
-$routes->get('tugas', 'tugas::index');
+$routes->get('tugas', 'Tugas::index');
 $routes->get('tugas/create', 'tugas::create');
 $routes->post('tugas/store', 'tugas::store');
 $routes->get('tugas/edit/(:num)', 'tugas::edit/$1');
@@ -37,8 +37,8 @@ $routes->post('tugas/ubahStatus/(:num)', 'Tugas::ubahStatus/$1');
 $routes->get('tugas/delete/(:num)', 'Tugas::delete/$1');
 $routes->get('tugas/detail/(:num)', 'Tugas::detail/$1');
 $routes->get('tugas/shared/(:num)', 'Tugas::share/$1');
-$routes->post('tugas/share/(:num)', 'Tugas::storeShared/$1');
-$routes->post('tugas/upload', 'Tugas::upload');
+$routes->post('tugas/upload/(:num)', 'Tugas::upload/$1');
+$routes->post('tugas/storeShared/(:num)', 'Tugas::storeShared/$1');
 
 
 
