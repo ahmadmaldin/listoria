@@ -1,0 +1,99 @@
+<?php
+
+use CodeIgniter\Router\RouteCollection;
+
+/**
+ * @var RouteCollection $routes
+ */
+// Variabel Filter
+$authFilter = ['filter' => 'auth'];
+
+// Variabel Role
+$admin      = ['filter' => 'role:admin'];
+$user  = ['filter' => 'role:user'];
+$allRole    = ['filter' => 'role:admin,user'];
+
+// Login
+$routes->get('/login', 'Auth::login');
+$routes->post('/proses-login', 'Auth::prosesLogin');
+$routes->get('/logout', 'Auth::logout');
+
+// Backup db
+$routes->get('/backup', 'Backup::database');
+$routes->get('/lay', 'Home::index');
+
+// Halaman utama
+$routes->get('/', 'Home::index', $authFilter);
+$routes->get('/dashboard', 'Home::index', $authFilter);
+$routes->get('about', 'Home::about', $allRole);
+
+// tugas
+$routes->get('tugas', 'tugas::index');
+$routes->get('tugas/create', 'tugas::create');
+$routes->post('tugas/store', 'tugas::store');
+$routes->get('tugas/edit/(:num)', 'tugas::edit/$1');
+$routes->post('tugas/update/(:num)', 'tugas::update/$1');
+$routes->post('tugas/ubahStatus/(:num)', 'Tugas::ubahStatus/$1');
+$routes->get('tugas/delete/(:num)', 'Tugas::delete/$1');
+$routes->get('tugas/detail/(:num)', 'Tugas::detail/$1');
+$routes->get('tugas/shared/(:num)', 'Tugas::share/$1');
+$routes->post('tugas/share/(:num)', 'Tugas::storeShared/$1');
+$routes->post('tugas/upload', 'Tugas::upload');
+
+
+
+//user
+$routes->get('user', 'user::index');
+$routes->get('user/create', 'user::create');
+$routes->post('user/store', 'user::store');
+$routes->get('user/edit/(:num)', 'user::edit/$1');
+$routes->post('user/update/(:num)', 'user::update/$1');
+$routes->get('user/delete/(:num)', 'user::delete/$1');
+
+
+/// attachment
+$routes->get('attachment', 'attachment::index', $user);  // Rute GET untuk melihat daftar lampiran, hanya bisa diakses oleh user.
+$routes->get('attachment/create', 'attachment::create', $user);  // Rute GET untuk membuat lampiran baru, hanya bisa diakses oleh user.
+$routes->post('attachment/store', 'attachment::store', $user);  // Rute POST untuk menyimpan lampiran baru.
+$routes->get('attachment/edit/(:num)', 'attachment::edit/$1', $user);  // Rute GET untuk mengedit lampiran berdasarkan ID yang diteruskan.
+$routes->post('attachment/update/(:num)', 'attachment::update/$1', $user);  // Rute POST untuk memperbarui lampiran berdasarkan ID yang diteruskan.
+$routes->post('attachment/delete/(:num)', 'attachment::delete/$1', $user);  // Rute POST untuk menghapus lampiran berdasarkan ID yang diteruskan.
+
+
+
+// groups
+$routes->get('groups', 'Groups::index');
+$routes->get('groups/create', 'Groups::create');
+$routes->post('groups/store', 'Groups::store');
+$routes->get('groups/edit/(:num)', 'Groups::edit/$1');
+$routes->post('groups/update/(:num)', 'Groups::update/$1');
+$routes->get('groups/delete/(:num)', 'Groups::delete/$1');
+$routes->get('groups/detail/(:num)', 'Groups::detail/$1');
+$routes->post('groups/addMember', 'Groups::addMember');
+$routes->post('groups/deleteMember', 'Groups::deleteMember');
+
+
+
+// member
+$routes->get('/member', 'member::index');
+$routes->get('/member/create', 'member::create');
+$routes->post('/member/store', 'member::store');
+$routes->get('/member/edit/(:num)', 'member::edit/$1');
+$routes->post('/member/update/(:num)', 'member::update/$1');
+$routes->get('/member/delete/(:num)', 'member::delete/$1');
+
+//shared
+$routes->post('/shared/store', 'shared::store', $user);  // Rute POST untuk menyimpan data yang dibagikan.
+$routes->post('/shared/delete/(:num)', 'shared::delete/$1', $user);  // Rute POST untuk menghapus data yang dibagikan berdasarkan ID yang diteruskan.
+$routes->post('shared/shareToGroup/(:num)', 'shared::shareToGroup/$1', $user);  // Rute POST untuk membagikan data ke grup berdasarkan ID yang diteruskan.
+$routes->get('shared/updateStatusNext/(:num)', 'shared::updateStatusNext/$1', $user);  // Rute GET untuk memperbarui status berbagi ke status berikutnya berdasarkan ID yang diteruskan.
+
+
+// friendship
+$routes->get('/friendship', 'Friendship::index', $user);  // Rute GET untuk melihat daftar pertemanan, hanya bisa diakses oleh user.
+$routes->get('friendship/index', 'Friendship::index', $user);  // Rute GET untuk melihat daftar pertemanan, hanya bisa diakses oleh user.
+$routes->post('friendship/add', 'Friendship::add', $user);  // Rute POST untuk menambah pertemanan.
+$routes->get('friendship/accept/(:num)', 'Friendship::accept/$1', $user);  // Rute GET untuk menerima pertemanan berdasarkan ID yang diteruskan.
+$routes->get('friendship/decline/(:num)', 'Friendship::decline/$1', $user);  // Rute GET untuk menolak pertemanan berdasarkan ID yang diteruskan.
+$routes->get('friendship/remove/(:num)', 'Friendship::remove/$1', $user);  // Rute GET untuk menghapus pertemanan berdasarkan ID yang diteruskan.
+
