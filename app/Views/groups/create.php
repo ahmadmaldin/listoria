@@ -6,7 +6,7 @@
         <h5 class="mb-0">Buat Grup Baru</h5>
     </div>
     <div class="card-body">
-        <form action="<?= base_url('/groups/store') ?>" method="post" enctype="multipart/form-data">
+        <form action="<?= base_url('groups/store') ?>" method="post" enctype="multipart/form-data">
             
             <div class="mb-3 row">
                 <label class="col-md-2 col-form-label">Nama Grup</label>

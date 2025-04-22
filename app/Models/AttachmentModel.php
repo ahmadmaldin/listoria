@@ -8,11 +8,7 @@ class AttachmentModel extends Model
     protected $table         = 'attachment';
     protected $primaryKey    = 'id_attachment';
     protected $allowedFields = ['id_tugas', 'type', 'file', 'description', 'content'];
-
-    // Jika ingin menggunakan timestamp otomatis (pastikan kolom created_at & updated_at ada):
-    // protected $useTimestamps = true;
-    // protected $createdField  = 'created_at';
-    // protected $updatedField  = 'updated_at';
+   
 
     /**
      * Cari lampiran berdasarkan keyword dan paginasi

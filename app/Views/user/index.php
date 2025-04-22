@@ -1,49 +1,78 @@
 <?= $this->extend('layouts/main'); ?>
 <?= $this->section('content'); ?>
 
-<a href="<?= base_url('/user/create') ?>">Tambah user</a>
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold py-3 mb-4 text-purple">Daftar User</h4>
+        <a href="<?= base_url('/user/create') ?>" class="btn btn-primary rounded-pill">
+            <i class="bx bx-user-plus"></i> Tambah User
+        </a>
+    </div>
 
-<form action="<?= base_url('user') ?>" method="GET">
-    <input type="text" name="keyword" placeholder="Cari user..." value="<?= esc($_GET['keyword'] ?? '') ?>">
-    <button type="submit">Cari</button>
-</form>
-<!-- Notifikasi Flash -->
-<?php if (session()->getFlashdata('success')): ?>
-        <div class="flash-success">
+    <!-- Flash message -->
+    <?php if (session()->getFlashdata('success')): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
             <?= session()->getFlashdata('success') ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <?php endif; ?>
 
     <?php if (session()->getFlashdata('error')): ?>
-        <div class="flash-error">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <?= session()->getFlashdata('error') ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <?php endif; ?>
-<table border="1">
-    <tr>
-        <th>ID</th>
-        <th>Nama</th>
-        <th>Level</th>
-        <th>Foto</th>
-        <th>Aksi</th>
-    </tr>
-    <?php $no = 1 + (5 * ($pager->getCurrentPage() - 1)); ?>
 
-    <?php foreach ($user as $row): ?>
-        <tr>
-            <td><?= $row['id_user'] ?></td>
-            <td><?= $row['username'] ?></td>
-            <td><?= $row['level'] ?></td>
-            <td><img src="<?= base_url('uploads/user/' . $row['photo']) ?>" width="50"></td>
-            <td>
-                <a href="<?= base_url('/user/edit/' . $row['id_user']) ?>">Edit</a> |
-                <a href="<?= base_url('/user/delete/' . $row['id_user']) ?>" onclick="return confirm('Hapus data?')">Hapus</a>
-            </td>
-        </tr>
-    <?php endforeach; ?>
-</table>
-<div>
-    <?= $pager->links(); ?>
+    <!-- Form Cari -->
+    <form action="<?= base_url('user') ?>" method="GET" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="keyword" class="form-control" placeholder="Cari user..." value="<?= esc($_GET['keyword'] ?? '') ?>">
+            <button class="btn btn-outline-primary" type="submit"><i class="bx bx-search"></i> Cari</button>
+        </div>
+    </form>
+
+    <!-- Tabel User -->
+    <div class="card">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nama</th>
+                        <th>Level</th>
+                        <th>Foto</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                    <?php foreach ($user as $row): ?>
+                        <tr>
+                            <td><?= $row['id_user'] ?></td>
+                            <td><?= $row['username'] ?></td>
+                            <td><span class="badge bg-info text-dark"><?= $row['level'] ?></span></td>
+                            <td>
+                                <img src="<?= base_url('uploads/user/' . $row['photo']) ?>" alt="Foto" class="rounded-circle" width="40" height="40">
+                            </td>
+                            <td>
+                                <a href="<?= base_url('/user/edit/' . $row['id_user']) ?>" class="btn btn-sm btn-warning">
+                                    <i class="bx bx-edit-alt"></i> Edit
+                                </a>
+                                <a href="<?= base_url('/user/delete/' . $row['id_user']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus data?')">
+                                    <i class="bx bx-trash"></i> Hapus
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-3">
+        <?= $pager->links(); ?>
+    </div>
 </div>
-</body>
+
 <?= $this->endSection(); ?>

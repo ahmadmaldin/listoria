@@ -35,33 +35,45 @@ class Tugas extends BaseController
     }
 
     // Fungsi untuk menyimpan tugas
+    
     public function store()
-    {
-        $dataTugas = [
-            'id_user' => $this->request->getPost('creator_id'),
-            'tugas' => $this->request->getPost('tugas'),
-            'tanggal' => $this->request->getPost('tanggal'),
-            'waktu' => $this->request->getPost('waktu'),
-            'status' => $this->request->getPost('status'),
-        ];
+{
+    $tugasModel = new TugasModel();
+    $sharedModel = new SharedModel();
 
-        // Simpan data tugas
-        $this->tugasModel->save($dataTugas);
+    // Ambil ID user dari session
+    $id_user = session()->get('id_user'); 
 
-        // Ambil ID tugas yang baru disimpan
-        $id = $this->tugasModel->insertID();
-
-        // Tambahkan ke shared untuk user itu sendiri
-        $this->sharedModel->insert([
-            'id_tugas' => $id,
-            'shared_type' => 'user',
-            'shared_date' => date('Y-m-d H:i:s'),
-            'accept_date' => date('Y-m-d H:i:s'),
-            'shared_by' => $this->request->getPost('creator_id'),
-        ]);
-
-        return redirect()->to('tugas/index')->with('success', 'Tugas berhasil dibuat dan dibagikan ke diri sendiri.');
+    if (!$id_user) {
+        return redirect()->to('/login')->with('error', 'Anda harus login terlebih dahulu.');
     }
+
+    $dataTugas = [
+        'id_user'  => $id_user,
+        'tugas'    => $this->request->getPost('tugas'),
+        'tanggal'  => $this->request->getPost('tanggal'),
+        'waktu'    => $this->request->getPost('waktu'),
+        'status'   => $this->request->getPost('status'),
+    ];
+
+    // Simpan data tugas
+    $tugasModel->save($dataTugas);
+
+    // Ambil ID tugas yang baru disimpan
+    $idtugas = $tugasModel->insertID();
+
+    // Tambahkan ke shared untuk user itu sendiri
+    $sharedModel->insert([
+        'id_tugas'    => $idtugas,
+        'shared_to'   => $id_user,
+        'shared_type' => 'user',
+        'shared_by'   => $id_user,
+        'accepted'    => 'todo',
+        'shared_date' => date('Y-m-d H:i:s'),
+    ]);
+
+    return redirect()->to('tugas/index')->with('success', 'Tugas berhasil dibuat dan dibagikan ke diri sendiri.');
+}
 
     // Fungsi untuk edit tugas
     public function edit($id)
@@ -117,23 +129,49 @@ class Tugas extends BaseController
 
     // Fungsi untuk menampilkan detail tugas
     public function detail($id)
-{
-    // Ambil data tugas
-    $tugas = $this->tugasModel->find($id);
+    {
+        $tugasModel = new TugasModel();
+        $attachmentModel = new AttachmentModel();
+        $userModel = new UserModel();
+        $groupModel = new GroupModel();
+        $sharedModel = new SharedModel(); // Menambahkan model SharedModel untuk shared tasks
+        
+        // Ambil data tugas
+        $tugas = $tugasModel->find($id);
+        
+        // Ambil data attachment terkait tugas
+        $attachments = $attachmentModel->where('id_tugas', $id)->findAll();
+        
+        // Ambil semua user
+        $users = $userModel->findAll();
+    
+        // Ambil semua grup (atau sesuai kebutuhan kamu bisa menambah filter untuk grup)
+        $groups = $groupModel->findAll();
+        
+        // Ambil daftar shared users
+        $sharedUsers = $sharedModel
+                        ->join('user', 'user.id_user = shared.shared_by') // Join dengan tabel user untuk mendapatkan nama penerima
+                        ->where('id_tugas', $id)
+                        ->findAll();
 
-    // Ambil semua lampiran yang terhubung dengan tugas ini
-    $lampiran = $this->attachmentModel
-                     ->where('id_tugas', $id)
-                     ->findAll();
+        // Kirimkan data tugas, attachment, user, grup, dan shared users ke view
+        return view('tugas/detail', [
+            'title' => 'Detail Tugas',
+            'tugas' => $tugas,
+            'attachments' => $attachments,
+            'users' => $users,
+            'groups' => $groups,
+            'sharedUsers' => $sharedUsers // Menambahkan shared users ke view
+        ]);
+    }
 
-    return view('tugas/detail', [
-        'tugas'     => $tugas,
-        'lampiran'  => $lampiran,
-        // data lain seperti daftar user/grup untuk share
-        'users'     => $this->userModel->findAll(),
-        'groups'    => $this->groupModel->findAll(),
-    ]);
-}
+    public function show($id)
+    {
+        $tugasModel = new TugasModel();
+        $tugas = $tugasModel->getTugasWithCreator($id);
+        return view('tugas/detail', ['tugas' => $tugas]);
+    }
+
 
 
     // Fungsi untuk membagikan tugas
@@ -171,6 +209,7 @@ class Tugas extends BaseController
             return redirect()->to('/tugas/detail/' . $id)->with('error', 'Silakan pilih pengguna atau grup yang valid untuk membagikan tugas.');
         }
     }
+
 
     // Fungsi untuk menyimpan pembagian tugas
     public function storeShared($id)

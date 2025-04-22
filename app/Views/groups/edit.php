@@ -2,7 +2,7 @@
 <?= $this->section('content'); ?>
 
 <h2>Edit Grup</h2>
-<form action="<?= base_url('/groups/update/' . $group['id_groups']) ?>" method="post" enctype="multipart/form-data">
+<form action="<?= base_url('groups/update/' . $group['id_groups']) ?>" method="post" enctype="multipart/form-data">
 <label>Nama Grup:</label><br>
     <input type="text" name="group_name" value="<?= $group['group_name'] ?>" required><br><br>
 

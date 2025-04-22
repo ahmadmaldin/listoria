@@ -12,5 +12,10 @@ class SharedModel extends Model
         'accepted', 'share_date', 'accept_date'
     ];
 
-    // Jika perlu, bisa ditambahkan aturan validasi dan sebagainya.
+    public function getSharedUserByTugas($id)
+    {
+        return $this->join('user', 'user.id_user = shared.shared_by')  // Menyertakan tabel users
+                    ->where('shared.id_tugas', $id)  // Memfilter berdasarkan id_tugas
+                    ->findAll();
+    }
 }

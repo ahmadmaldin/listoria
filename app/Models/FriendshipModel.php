@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Models;
 
@@ -8,31 +8,29 @@ class FriendshipModel extends Model
 {
     protected $table = 'friendships';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['user_id', 'friend_id', 'status'];
+    protected $allowedFields = ['id_user', 'id_friend', 'status'];
 
     // Menambahkan permintaan pertemanan
     public function addFriendRequest($userId, $friendId)
     {
         $data = [
-            'user_id' => $userId,
-            'friend_id' => $friendId,
+            'id_user' => $userId,
+            'id_friend' => $friendId,
             'status' => 'pending',
         ];
 
         return $this->insert($data);
     }
 
-    // Mendapatkan daftar teman (yang sudah accepted), dengan informasi username dan photo dari tabel user
+    // Mendapatkan daftar teman (yang sudah accepted), dengan informasi username dari tabel user
     public function getFriends($userId)
     {
-        return $this->select('u.username, u.photo, friendships.*')
-            ->join('user u', 'u.id_user = friendships.friend_id', 'left') // Ganti id menjadi id_user
-            ->where('friendships.user_id', $userId)
+        return $this->select('user.username, user.photo, friendships.*')
+            ->join('user', 'user.id_user = IF(friendships.id_user = ' . $userId . ', friendships.id_friend, friendships.id_user)')
             ->where('friendships.status', 'accepted')
-            ->orGroupStart()
-                ->join('user u2', 'u2.id_user = friendships.user_id', 'left') // Ganti id menjadi id_user
-                ->where('friendships.friend_id', $userId)
-                ->where('friendships.status', 'accepted')
+            ->groupStart()
+                ->where('friendships.id_user', $userId)
+                ->orWhere('friendships.id_friend', $userId)
             ->groupEnd()
             ->findAll();
     }
@@ -41,18 +39,18 @@ class FriendshipModel extends Model
     public function getFriendRequests($userId)
     {
         return $this->select('user.username, user.photo, friendships.*')
-            ->join('user', 'user.id_user = friendships.user_id')
-            ->where('friendships.friend_id', $userId)
+            ->join('user', 'user.id_user = friendships.id_user')
+            ->where('friendships.id_friend', $userId)
             ->where('friendships.status', 'pending')
             ->findAll();
     }
 
-    // Mendapatkan daftar permintaan yang telah dikirim oleh user (pending)
+    // Mendapatkan daftar permintaan pertemanan yang dikirim user login dan masih pending
     public function getSentRequests($userId)
     {
         return $this->select('user.username, user.photo, friendships.*')
-            ->join('user', 'user.id_user = friendships.friend_id')
-            ->where('friendships.user_id', $userId)
+            ->join('user', 'user.id_user = friendships.id_friend')
+            ->where('friendships.id_user', $userId)
             ->where('friendships.status', 'pending')
             ->findAll();
     }

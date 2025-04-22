@@ -12,40 +12,43 @@ class Attachment extends BaseController
     {
         $this->attachmentModel = new AttachmentModel();
     }
-
-    // Method untuk menyimpan lampiran
-    public function store()
-    {
-        if ($this->request->getMethod() === 'post') {
-            // Mengambil file dari form input
-            $file = $this->request->getFile('foto');
-
-            // Pastikan file valid
-            if ($file->isValid() && !$file->hasMoved()) {
-                // Tentukan folder tujuan penyimpanan file
-                $filePath = 'uploads/attachment/';
-                $fileName = $file->getRandomName(); // Nama file acak
-
-                // Pindahkan file ke folder tujuan
-                $file->move($filePath, $fileName);
-
-                // Menyimpan data lampiran ke database
-                $data = [
-                    'id_tugas' => $this->request->getPost('idtugas'),
-                    'file' => $fileName,
-                    'tipe' => $this->request->getPost('tipe'),
-                    'desk' => $this->request->getPost('desk')
-                ];
-
-                // Insert data ke database
-                $this->attachmentModel->insert($data);
-
-                return redirect()->to('tugas/detail/' . $this->request->getPost('idtugas'));
-            } else {
-                return redirect()->back()->with('error', 'File gagal diupload');
+        public function store()
+        {
+            $validation = \Config\Services::validation();
+    
+            $data = $this->request->getPost();
+            $file = $this->request->getFile('photo');
+    
+            // Validasi input
+            $isValid = $this->validate([
+                'id_tugas' => 'required|numeric',
+                'type' => 'required',
+                'description' => 'permit_empty|string',
+                'photo' => 'uploaded[photo]|max_size[photo,2048]|mime_in[photo,image/jpeg,image/png,application/pdf]',
+            ]);
+    
+            if (!$isValid) {
+                return redirect()->back()->withInput()->with('errors', $validation->getErrors());
             }
+    
+            // Simpan file
+            if ($file->isValid() && !$file->hasMoved()) {
+                $newName = $file->getRandomName();
+                $file->move('uploads/atachment', $newName);
+            }
+    
+            // Simpan ke database
+            $attachmentModel = new AttachmentModel();
+            $attachmentModel->insert([
+                'id_tugas' => $data['id_tugas'],
+                'type' => $data['type'],
+                'file' => $newName ?? null,
+                'description' => $data['description'],
+            ]);
+    
+            return redirect()->to('/tugas/detail/' . $data['id_tugas'])->with('success', 'Attachment berhasil ditambahkan!');
         }
-    }
+    
 
     // Method untuk menghapus lampiran
     public function delete($id)
@@ -53,7 +56,7 @@ class Attachment extends BaseController
         $attachment = $this->attachmentModel->find($id);
         if ($attachment) {
             // Hapus file dari server
-            unlink('uploads/attachment/' . $attachment['file']);
+            unlink('public/uploads/attachment/' . $attachment['file']);
 
             // Hapus data lampiran dari database
             $this->attachmentModel->delete($id);
