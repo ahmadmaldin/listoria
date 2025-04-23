@@ -1,66 +1,149 @@
 <?= $this->extend('layouts/main'); ?>
-
 <?= $this->section('content'); ?>
 
-<!-- Meta tag untuk melakukan refresh halaman setiap 60 detik -->
-<meta http-equiv="refresh" content="60">
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">Dashboard</h4>
 
-<?php
-// Menetapkan timezone Jakarta
-date_default_timezone_set('Asia/Jakarta');
+    <!-- Tugas Mendekati Deadline -->
+    <div class="row">
+        <div class="col-xl-6 col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Tugas yang Mendekati Deadline</h5>
+                    <a href="<?= base_url('tugas') ?>" class="text-muted small"><i class="bx bx-list-ul"></i> Lihat Semua</a>
+                </div>
+                <div class="card-body">
+                    <?php if (!empty($tugasMendekatiDeadline)): ?>
+                        <div class="list-group">
+                            <?php foreach ($tugasMendekatiDeadline as $tugas): ?>
+                                <?php
+                                    $now = new DateTime();
+                                    $deadline = new DateTime($tugas['date_due'] . ' ' . $tugas['time_due']);
+                                    if ($deadline > $now) {
+                                        $interval = $now->diff($deadline);
+                                        $jam = $interval->h + ($interval->d * 24);
+                                        $menit = $interval->i;
 
-// Array yang berisi nama hari dalam bahasa Indonesia
-$hari = [
-    'Sunday'    => 'Minggu',
-    'Monday'    => 'Senin',
-    'Tuesday'   => 'Selasa',
-    'Wednesday' => 'Rabu',
-    'Thursday'  => 'Kamis',
-    'Friday'    => 'Jumat',
-    'Saturday'  => 'Sabtu'
-];
+                                        $badgeColor = $jam < 1 ? 'bg-danger' : ($jam < 3 ? 'bg-warning text-dark' : 'bg-info text-dark');
 
-// Mengambil informasi tanggal dan waktu saat ini
-$now = new DateTime();
-$namaHari = $hari[$now->format('l')]; // Menyimpan nama hari saat ini dalam bahasa Indonesia
-$tanggal = $now->format('d-m-Y'); // Menyimpan tanggal dalam format dd-mm-yyyy
-$jam     = $now->format('H:i'); // Menyimpan jam dalam format hh:mm
-?>
+                                        $badge = "<span class='badge $badgeColor'>⏰ ";
+                                        if ($jam > 0) $badge .= "$jam j ";
+                                        if ($menit > 0) $badge .= "$menit m ";
+                                        $badge .= "lagi</span>";
+                                    } else {
+                                        $interval = $deadline->diff($now);
+                                        $jam = $interval->h + ($interval->d * 24);
+                                        $menit = $interval->i;
 
-<!-- Menampilkan informasi hari, tanggal, dan waktu -->
-<div>
-    <H2>Hari <strong> <?= $namaHari ?></strong></H2> <!-- Menampilkan nama hari dalam bahasa Indonesia -->
-    <?= $tanggal ?></p> <!-- Menampilkan tanggal -->
-    <?= $jam ?> WIB</p> <!-- Menampilkan jam dalam format WIB -->
+                                        $badge = "<span class='badge bg-secondary'>⚠️ Telat ";
+                                        if ($jam > 0) $badge .= "$jam j ";
+                                        if ($menit > 0) $badge .= "$menit m ";
+                                        $badge .= "</span>";
+                                    }
+                                ?>
+                                <a href="<?= base_url('tugas/detail/' . $tugas['id']) ?>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong><?= esc($tugas['tugas']) ?></strong><br>
+                                        <small class="text-muted">Deadline: <?= esc($tugas['date_due']) ?> <?= esc($tugas['time_due']) ?></small>
+                                    </div>
+                                    <?= $badge ?>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <p class="text-muted">Tidak ada tugas yang mendekati deadline.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistik -->
+        <div class="col-xl-6 col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Statistik Tugas</h5>
+                    <a href="<?= base_url('tugas') ?>" class="text-muted small"><i class="bx bx-bar-chart-alt-2"></i> Lihat Semua</a>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <h6>To Do</h6>
+                            <div class="progress">
+                                <div class="progress-bar bg-primary" style="width: <?= $totalToDo ?>%"><?= $totalToDo ?>%</div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <h6>Doing</h6>
+                            <div class="progress">
+                                <div class="progress-bar bg-info" style="width: <?= $totalDoing ?>%"><?= $totalDoing ?>%</div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <h6>Selesai</h6>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" style="width: <?= $totalSelesai ?>%"><?= $totalSelesai ?>%</div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <h6>Batal</h6>
+                            <div class="progress">
+                                <div class="progress-bar bg-danger" style="width: <?= $totalBatal ?>%"><?= $totalBatal ?>%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tugas Hari Ini -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Tugas Hari Ini</h5>
+                    <a href="<?= base_url('tugas') ?>" class="text-muted small"><i class="bx bx-calendar-event"></i> Lihat Semua</a>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <?php foreach ($tugasHariIni as $tugas): ?>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong><?= esc($tugas['tugas']) ?></strong><br>
+                                    <small class="text-muted">Deadline: <?= esc($tugas['date_due']) ?> <?= esc($tugas['time_due']) ?></small>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+                        <?php if (empty($tugasHariIni)) echo '<li class="list-group-item text-muted">Tidak ada tugas hari ini.</li>'; ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grup yang Diikuti -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Grup yang Kamu Ikuti</h5>
+                    <a href="<?= base_url('groups') ?>" class="text-muted small"><i class="bx bx-group"></i> Lihat Semua</a>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <?php foreach ($groups as $group): ?>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <?= esc($group['group_name']) ?>
+                                <a href="<?= base_url('groups/detail/' . $group['id_groups']) ?>" class="badge bg-info text-white">Lihat</a>
+                            </li>
+                        <?php endforeach; ?>
+                        <?php if (empty($groups)) echo '<li class="list-group-item text-muted">Kamu belum ikut grup apapun.</li>'; ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<!-- Menampilkan pesan error jika ada menggunakan session flashdata -->
-<?php if (session()->getFlashdata('error')): ?>
-    <p style="color:red"><?= session()->getFlashdata('error') ?></p>
-<?php endif; ?>
-
-<!-- Menampilkan daftar tugas baru -->
-<?php foreach ($tugasBaru as $tugas): ?>
-    <div>
-        <!-- Menampilkan tugas baru yang belum diterima -->
-        Tugas <strong><?= esc($tugas['tugas']) ?></strong> (<?= esc($tugas['status']) ?>) Ada tugas baru yang dibagikan kepada anda dan belum diterima!
-    </div>
-<?php endforeach; ?>
-
-<!-- Menampilkan daftar tugas yang harus segera dikerjakan -->
-<?php foreach ($tugasSegera as $tugas): ?>
-    <div>
-        <!-- Menampilkan tugas yang harus segera dikerjakan dalam waktu kurang dari 24 jam -->
-        Tugas <strong><?= esc($tugas['tugas']) ?></strong> (<?= esc($tugas['status']) ?>) harus segera dikerjakan (kurang dari 24 jam)!
-    </div>
-<?php endforeach; ?>
-
-<!-- Menampilkan daftar tugas yang sudah terlambat -->
-<?php foreach ($tugasTerlambat as $tugas): ?>
-    <div>
-        <!-- Menampilkan tugas yang sudah melewati batas waktu -->
-        Tugas <strong><?= esc($tugas['tugas']) ?></strong> (<?= esc($tugas['status']) ?>) sudah melewati batas waktu!
-    </div>
-<?php endforeach; ?>
-<!-- if this line is still there, it means I just copy paste my friend's UKK application -->
 <?= $this->endSection(); ?>

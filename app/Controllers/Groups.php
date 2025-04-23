@@ -8,13 +8,13 @@ use App\Models\MemberModel;
 
 class Groups extends BaseController
 {
-    protected $GroupModel;
-    protected $UserModel;
+    protected $groupModel;
+    protected $userModel;
 
     public function __construct()
     {
-        $this->GroupModel = new GroupModel();
-        $this->UserModel = new UserModel();
+        $this->groupModel = new GroupModel();
+        $this->userModel = new UserModel();
         
     }
 
@@ -30,7 +30,7 @@ class Groups extends BaseController
         $userId = session()->get('id_user');
         
         // Grup yang dibuat oleh user
-        $createdGroups = $this->GroupModel
+        $createdGroups = $this->groupModel
         ->where('groups.id_user', $userId) // <<< perjelas nama tabel
         ->join('user', 'user.id_user = groups.id_user')
         ->select('groups.*, user.username')
@@ -38,7 +38,7 @@ class Groups extends BaseController
     
     
         // Grup yang user ikuti (dari tabel member)
-        $joinedGroups = $this->GroupModel->getGroupsForCurrentUser($userId);
+        $joinedGroups = $this->groupModel->getGroupsForCurrentUser($userId);
     
         // Gabungkan dua array dan hilangkan duplikat
         $allGroups = array_merge($createdGroups, $joinedGroups);
@@ -65,7 +65,7 @@ class Groups extends BaseController
         $createdBy = session()->get('id_user');
 
         // Menyimpan data grup
-        $this->GroupModel->save([
+        $this->groupModel->save([
             'group_name' => $this->request->getPost('group_name'),
             'id_user' => $createdBy, // Set id_user dengan ID user dari session
             'photo' => $this->uploadphoto(),
@@ -78,75 +78,58 @@ class Groups extends BaseController
 
     public function edit($id)
     {
-        $group = $this->GroupModel->find($id);
-        $members = $this->GroupModel->getMembers($id); // Misal ada method untuk ambil anggota grup
-        $isOwner = $group['id_user'] == session()->get('id_user');  // Cek apakah yang melihat adalah pembuat grup
+        $groups = $this->groupModel->find($id);
+        if (!$groups) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Group tidak ditemukan');
+        }
 
-        $users = $this->UserModel->where('id_user !=', session()->get('id_user'))->findAll();
-
-        return view('groups/edit', [
-            'group' => $group,
-            'members' => $members,
-            'isOwner' => $isOwner,
-            'users' => $users,
-        ]);
+        $data = [
+            'title' => 'Edit Group',
+            'groups' => $groups
+        ];
+        return view('groups/edit', $data);
     }
-    
+
+    // Mengupdate data groups yang diubah pada halaman views/groups/edit
     public function update($id)
     {
-        $groupModel = new \App\Models\GroupModel();
-        $group = $groupModel->find($id);
-    
+        $group = $this->groupModel->find($id);
         if (!$group) {
-            return redirect()->to('groups')->with('error', 'Grup tidak ditemukan');
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Group tidak ditemukan');
         }
-    
-        // Cek apakah user yang login adalah pembuat grup
-        if ($group['id_user'] != session()->get('id')) {
-            return redirect()->to('groups')->with('error', 'Kamu tidak punya izin untuk update grup ini');
-        }
-    
-        // Ambil data dari form
+
+        $password = $this->request->getPost('password')
+            ? ($this->request->getPost('password'))
+            : $group['password'];
+
         $data = [
-            'group_name'  => $this->request->getPost('group_name'),
+            'group_name'   => $this->request->getPost('group_name'),
+            'created_by'   => $this->request->getPost('created_by'),
+            'group_owner'  => $this->request->getPost('group_owner'),
             'description' => $this->request->getPost('description'),
+            'password'    => $password
         ];
-    
-        // Kalau password baru diisi, hash dan update
-        if ($this->request->getPost('password')) {
-            $data['password'] = password_hash($this->request->getPost('password'), PASSWORD_DEFAULT);
-        }
-    
-        // Cek jika upload file baru
-        $file = $this->request->getFile('photo');
-        if ($file && $file->isValid() && !$file->hasMoved()) {
-            $newName = $file->getRandomName();
-            $file->move('uploads/', $newName);
-            $data['photo'] = $newName;
-        }
-    
-        // Simpan perubahan
-        $groupModel->update($id, $data);
-    
-        return redirect()->to('groups')->with('success', 'Grup berhasil diperbarui');
+
+        $this->groupModel->update($id, $data);
+        return redirect()->to('/groups')->with('success', 'Group berhasil diperbarui.');
     }
-    
+
 
     // Menghapus grup
     public function delete($id)
     {
-        $this->GroupModel->delete($id);
+        $this->groupModel->delete($id);
         return redirect()->to('/groups');
     }
 
     // Menampilkan detail grup dan anggota
     public function detail($id)
     {
-        $group = $this->GroupModel->find($id);
-        $members = $this->GroupModel->getMembers($id); // Misal ada method untuk ambil anggota grup
+        $group = $this->groupModel->find($id);
+        $members = $this->groupModel->getMembers($id); // Misal ada method untuk ambil anggota grup
         $isOwner = $group['id_user'] == session()->get('id_user');  // Cek apakah yang melihat adalah pembuat grup
 
-        $users = $this->UserModel->where('id_user !=', session()->get('id_user'))->findAll();
+        $users = $this->userModel->where('id_user !=', session()->get('id_user'))->findAll();
 
         return view('groups/detail', [
             'group' => $group,

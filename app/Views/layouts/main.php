@@ -25,6 +25,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
         rel="stylesheet" />
+    <link rel="stylesheet" href="assets//vendor/fonts/iconify-icons.css" />
     <link rel="stylesheet" href="<?= base_url('assets/vendor/fonts/boxicons.css'); ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/vendor/css/core.css'); ?>" class="template-customizer-core-css" />
     <link rel="stylesheet" href="<?= base_url('assets/vendor/css/theme-default.css'); ?>" class="template-customizer-theme-css" />
@@ -52,6 +53,7 @@
                 </div>
                 <?= view('layouts/menu') ?>
             </aside>
+
 
             <!-- Layout container -->
             <div class="layout-page">

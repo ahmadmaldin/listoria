@@ -19,7 +19,7 @@ class Friendship extends BaseController
     // Menampilkan data pertemanan
     public function index()
     {
-        $userId = session()->get('id_user');
+        $userId = session()->get('id');
 
         $data = [
             'title' => 'Pertemanan Anda',
@@ -34,57 +34,59 @@ class Friendship extends BaseController
     // Menambahkan teman
     public function add()
     {
-        $userId = session()->get('id_user');
+        $userId = session()->get('id');
         $friendId = $this->request->getPost('friend_id');
 
         // Validasi ID tidak kosong, bukan diri sendiri, dan numerik
         if (!$friendId || !is_numeric($friendId) || $friendId == $userId) {
-            return redirect()->to('/friendship')->with('error', 'ID teman tidak valid.');
+            return redirect()->to('friendship/index')->with('error', 'ID teman tidak valid.');
         }
 
         // Periksa apakah user tersebut ada
         $friend = $this->userModel->find($friendId);
         if (!$friend) {
-            return redirect()->to('/friendship')->with('error', 'User dengan ID tersebut tidak ditemukan.');
+            return redirect()->to('friendship/index')->with('error', 'User dengan ID tersebut tidak ditemukan.');
         }
 
-        // Cek apakah sudah pernah mengirim permintaan atau sudah berteman
+        // Periksa apakah sudah pernah mengirim permintaan atau sudah berteman
         $existing = $this->friendshipModel
-            ->where('(id_user = ' . $userId . ' AND id_friend = ' . $friendId . ') 
-                    OR (id_user = ' . $friendId . ' AND id_friend = ' . $userId . ')')
+            ->where('(user_id = ' . $userId . ' AND friend_id = ' . $friendId . ') 
+                    OR (user_id = ' . $friendId . ' AND friend_id = ' . $userId . ')')
             ->first();
 
         if ($existing) {
             if ($existing['status'] == 'pending') {
-                return redirect()->to('/friendship')->with('info', 'Permintaan pertemanan sudah dikirim.');
+                return redirect()->to('friendship/index')->with('info', 'Permintaan pertemanan sudah dikirim.');
             } else {
-                return redirect()->to('/friendship')->with('info', 'Kamu sudah berteman dengan user ini.');
+                return redirect()->to('friendship/index')->with('info', 'Kamu sudah berteman dengan user ini.');
             }
         }
 
         // Tambahkan permintaan
         $this->friendshipModel->addFriendRequest($userId, $friendId);
-        return redirect()->to('/friendship')->with('success', 'Permintaan pertemanan berhasil dikirim.');
+        return redirect()->to('friendship/index')->with('success', 'Permintaan pertemanan berhasil dikirim.');
     }
 
-    // Menerima pertemanan
+    // Menyetujui Pertemanan
     public function accept($id)
     {
         $this->friendshipModel->acceptFriendRequest($id);
-        return redirect()->to('/friendship')->with('success', 'Permintaan pertemanan diterima.');
+        return redirect()->to('friendship/index')->with('success', 'Permintaan pertemanan diterima.');
     }
 
-    // Menolak pertemanan
+    // Menolak Pertemanan
     public function decline($id)
     {
         $this->friendshipModel->declineFriendRequest($id);
-        return redirect()->to('/friendship')->with('success', 'Permintaan pertemanan ditolak.');
+        return redirect()->to('friendship/index')->with('success', 'Permintaan pertemanan ditolak.');
     }
 
     // Menghapus pertemanan
     public function remove($id)
     {
+        // Hapus pertemanan berdasarkan ID pertemanan
         $this->friendshipModel->removeFriendById($id);
-        return redirect()->to('/friendship')->with('success', 'Pertemanan berhasil dihapus.');
+
+        return redirect()->to('friendship/index')->with('success', 'Pertemanan berhasil dihapus.');
     }
 }

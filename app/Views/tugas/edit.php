@@ -63,7 +63,7 @@
                     <label for="status" class="form-label">Status</label>
                     <select name="status" id="status" class="form-control">
                         <option value="to do" <?= $tugas['status'] == 'to do' ? 'selected' : '' ?>>To Do</option>
-                        <option value="doing" <?= $tugas['status'] == 'doing' ? 'selected' : '' ?>>Doing</option>
+                        <option value="berjalan" <?= $tugas['status'] == 'berjalan' ? 'selected' : '' ?>>Berjalan</option>
                         <option value="selesai" <?= $tugas['status'] == 'selesai' ? 'selected' : '' ?>>Selesai</option>
                         <option value="batal" <?= $tugas['status'] == 'batal' ? 'selected' : '' ?>>Batal</option>
                     </select>

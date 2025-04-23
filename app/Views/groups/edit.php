@@ -2,13 +2,13 @@
 <?= $this->section('content'); ?>
 
 <h2>Edit Grup</h2>
-<form action="<?= base_url('groups/update/' . $group['id_groups']) ?>" method="post" enctype="multipart/form-data">
+<form action="<?= base_url('groups/update/' . $groups['id_groups']) ?>" method="post" enctype="multipart/form-data">
 <label>Nama Grup:</label><br>
-    <input type="text" name="group_name" value="<?= $group['group_name'] ?>" required><br><br>
+    <input type="text" name="group_name" value="<?= $groups['group_name'] ?>" required><br><br>
 
     <div class="mb-3 row">
             <div class="col-md-10">
-                <input class="form-control" name="id_user" type="hidden" value="<?= $group['id_user'] ?>" id="html5-text-input" required readonly />
+                <input class="form-control" name="id_user" type="hidden" value="<?= $groups['id_user'] ?>" id="html5-text-input" required readonly />
             </div>
         </div>
 
@@ -17,7 +17,7 @@
     <input type="file" name="photo"><br><br>
 
     <label>Deskripsi:</label><br>
-    <textarea name="description"><?= $group['description'] ?></textarea><br><br>
+    <textarea name="description"><?= $groups['description'] ?></textarea><br><br>
 
     <button type="submit">Update</button>
 </form>

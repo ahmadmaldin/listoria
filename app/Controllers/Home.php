@@ -1,70 +1,58 @@
-<?php
+<?php 
 
 namespace App\Controllers;
 
+use App\Models\TugasModel;
+use App\Models\GroupModel;
+use App\Models\MemberModel;
+
 class Home extends BaseController
 {
+    protected $tugasModel;
+    protected $groupModel;
+    protected $memberModel;
 
-    // Menampilkan halaman views/layouts/dashboard
+    public function __construct()
+    {
+        $this->tugasModel = new TugasModel();
+        $this->groupModel = new GroupModel();
+        $this->memberModel = new MemberModel();
+    }
+
     public function index()
     {
-        $sharedModel = new \App\Models\SharedModel();
-        $tugasModel = new \App\Models\TugasModel();
+        $userId = session()->get('id_user');
 
-        $userId = session()->get('id');
+        // Statistik jumlah tugas
+        $data['totalToDo'] = $this->tugasModel->where('creator_id', $userId)->where('status', 'to do')->countAllResults();
+        $data['totalDoing'] = $this->tugasModel->where('creator_id', $userId)->where('status', 'doing')->countAllResults();
+        $data['totalSelesai'] = $this->tugasModel->where('creator_id', $userId)->where('status', 'selesai')->countAllResults();
+        $data['totalBatal'] = $this->tugasModel->where('creator_id', $userId)->where('status', 'batal')->countAllResults();
 
-        // Ambil semua tugas yang dibagikan ke user ini dan belum selesai
-        $sharedTugas = $sharedModel
-            ->join('tugas', 'shared.id_tugas = tugas.id')
-            ->where('shared.shared_to', $userId)
-            ->whereNotIn('tugas.status', ['Selesai', 'Batal'])
-            ->select('tugas.*, shared.accepted')
+        // Tugas mendekati deadline (misal < 24 jam)
+        $now = date('Y-m-d H:i:s');
+        $besok = date('Y-m-d H:i:s', strtotime('+1 day'));
+
+        $data['tugasMendekatiDeadline'] = $this->tugasModel
+            ->where('creator_id', $userId)
+            ->where('status !=', 'selesai')
+            ->where("CONCAT(date_due, ' ', time_due) BETWEEN '$now' AND '$besok'")
             ->findAll();
 
-        $tugasSegera = [];
-        $tugasTerlambat = [];
-        $tugasBaru = [];
+        // Tugas hari ini
+        $today = date('Y-m-d');
+        $data['tugasHariIni'] = $this->tugasModel
+            ->where('creator_id', $userId)
+            ->where('date_due', $today)
+            ->findAll();
 
-        $now = new \DateTime();
+        // Grup yang user ikuti
+        $data['groups'] = $this->memberModel
+            ->join('groups', 'groups.id_groups = member.id_groups')
+            ->where('member.user_id', $userId)
+            ->select('groups.*')
+            ->findAll();
 
-        foreach ($sharedTugas as $row) {
-            $deadline = new \DateTime($row['tanggal'] . ' ' . $row['waktu']);
-
-            // Cek jika sudah melewati deadline, tetap masukkan meskipun lewat dari 1 hari
-            if (
-                $deadline < $now &&
-                $row['accepted'] !== 'done' &&
-                $row['accepted'] !== 'canceled'
-            ) {
-                $tugasTerlambat[] = $row;
-            }
-
-            // Cek jika deadline masih dalam waktu 24 jam ke depan
-            $interval = $now->diff($deadline);
-            if (
-                $deadline > $now &&
-                $interval->days === 0 &&
-                $interval->h < 24 &&
-                $row['accepted'] !== 'done' &&
-                $row['accepted'] !== 'canceled'
-            ) {
-                $tugasSegera[] = $row;
-            }
-
-            // Cek jika ada tugas baru yang belum diterima
-            if (
-                $row['accepted'] == 'shared'
-            ) {
-                $tugasBaru[] = $row;
-            }
-        }
-
-        return view('layouts/dashboard', [
-            'tugasSegera' => $tugasSegera,
-            'tugasTerlambat' => $tugasTerlambat,
-            'tugasBaru' => $tugasBaru,
-            'title' => 'Dashboard'
-        ]);
+        return view('layouts/dashboard', $data);
     }
 }
-// if this line is still there, it means I just copy paste my friend's UKK application

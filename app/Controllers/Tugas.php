@@ -43,17 +43,18 @@ class Tugas extends BaseController
 
     // Ambil ID user dari session
     $id_user = session()->get('id_user'); 
-
-    if (!$id_user) {
-        return redirect()->to('/login')->with('error', 'Anda harus login terlebih dahulu.');
-    }
-
     $dataTugas = [
-        'id_user'  => $id_user,
+        'creator_id'  => $id_user,
         'tugas'    => $this->request->getPost('tugas'),
         'tanggal'  => $this->request->getPost('tanggal'),
         'waktu'    => $this->request->getPost('waktu'),
         'status'   => $this->request->getPost('status'),
+        'alarm'   => $this->request->getPost('alarm'),
+        'date_due'   => $this->request->getPost('date_due'),
+        'time_due'   => $this->request->getPost('time_due'),
+        'time_finished' => $this->request->getPost('status') === 'selesai' ? date('Y-m-d H:i:s') : null,
+        'date_finished'   => $this->request->getPost('date_finished'),
+
     ];
 
     // Simpan data tugas
@@ -72,7 +73,7 @@ class Tugas extends BaseController
         'shared_date' => date('Y-m-d H:i:s'),
     ]);
 
-    return redirect()->to('tugas/index')->with('success', 'Tugas berhasil dibuat dan dibagikan ke diri sendiri.');
+    return redirect()->to(site_url('tugas'))->with('success', 'Tugas berhasil dibuat...');
 }
 
     // Fungsi untuk edit tugas
@@ -91,6 +92,12 @@ class Tugas extends BaseController
             'tanggal' => $this->request->getPost('tanggal'),
             'waktu' => $this->request->getPost('waktu'),
             'status' => $this->request->getPost('status'),
+            'alarm'   => $this->request->getPost('alarm'),
+            'date_due'   => $this->request->getPost('date_due'),
+            'time_due'   => $this->request->getPost('time_due'),
+            'time_finished' => $this->request->getPost('status') === 'selesai' ? date('Y-m-d H:i:s') : null,
+            'date_finished'   => $this->request->getPost('date_finished'),
+
         ]);
         return redirect()->to('tugas/index');
     }
@@ -125,8 +132,7 @@ class Tugas extends BaseController
         ]);
     
         return redirect()->to('/tugas/detail/' . $tugasId)->with('success', 'Lampiran berhasil diunggah!');
-    }
-
+    }     
     // Fungsi untuk menampilkan detail tugas
     public function detail($id)
     {
@@ -140,29 +146,32 @@ class Tugas extends BaseController
         $tugas = $tugasModel->find($id);
         
         // Ambil data attachment terkait tugas
-        $attachments = $attachmentModel->where('id_tugas', $id)->findAll();
+        $attachment = $attachmentModel->where('id_tugas', $id)->findAll();
         
         // Ambil semua user
-        $users = $userModel->findAll();
+        $user = $userModel->findAll();
     
         // Ambil semua grup (atau sesuai kebutuhan kamu bisa menambah filter untuk grup)
-        $groups = $groupModel->findAll();
+        $group = $groupModel->findAll();
         
-        // Ambil daftar shared users
+        // Ambil daftar shared user
         $sharedUsers = $sharedModel
-                        ->join('user', 'user.id_user = shared.shared_by') // Join dengan tabel user untuk mendapatkan nama penerima
-                        ->where('id_tugas', $id)
-                        ->findAll();
+        ->select('shared.*, user.username')
+        ->join('user', 'user.id_user = shared.shared_by') // ini untuk dapat username penerima
+        ->where('shared.id_tugas', $id)
+        ->findAll();
+    
 
-        // Kirimkan data tugas, attachment, user, grup, dan shared users ke view
+        // Kirimkan data tugas, attachment, user, grup, dan shared user ke view
         return view('tugas/detail', [
             'title' => 'Detail Tugas',
             'tugas' => $tugas,
-            'attachments' => $attachments,
-            'users' => $users,
-            'groups' => $groups,
-            'sharedUsers' => $sharedUsers // Menambahkan shared users ke view
+            'attachment' => $attachment,
+            'user' => $user,
+            'group' => $group,
+            'sharedUsers' => $sharedUsers 
         ]);
+        
     }
 
     public function show($id)
@@ -178,37 +187,72 @@ class Tugas extends BaseController
     public function share($id)
     {
         $tugas = $this->tugasModel->find($id);
-
+    
         if (!$tugas) {
             return redirect()->to('/tugas')->with('error', 'Tugas tidak ditemukan.');
         }
-
+    
         // Mendapatkan ID pengguna yang sedang login
         $userId = session()->get('id_user');
         if (!$userId) {
             return redirect()->to('/login')->with('error', 'Anda harus login untuk membagikan tugas.');
         }
-
+    
         $sharedTo = $this->request->getPost('shared_to');  // ID user atau ID grup
         $sharedType = $this->request->getPost('shared_type');  // 'user' atau 'group'
-
-        if ($sharedTo && $sharedType) {
+    
+        if ($sharedType == 'group' && $sharedTo) {
+            // Mengecek apakah pengguna adalah pembuat grup atau anggota grup yang dipilih
+            $isCreator = $this->groupModel->isGroupCreator($userId, $sharedTo);
+            $isMember = $this->groupModel->isUserGroupMember($userId, $sharedTo);
+    
+            if (!$isCreator && !$isMember) {
+                return redirect()->to('/tugas/detail/' . $id)->with('error', 'Anda tidak memiliki akses untuk membagikan tugas ke grup ini.');
+            }
+    
+            // Ambil semua anggota grup yang dipilih
+            $groupMembers = $this->groupModel->getGroupMembers($sharedTo);
+    
+            // Proses bagi tugas ke setiap anggota grup
+            foreach ($groupMembers as $member) {
+                $sharedData = [
+                    'id_tugas'    => $id,
+                    'shared_by'   => $userId,
+                    'shared_to'   => $member['id_user'],  // ID anggota grup
+                    'shared_type' => 'user',  // Tugas dibagikan ke pengguna individu
+                    'accepted'    => 'pending', // Status default
+                    'share_date'  => date('Y-m-d H:i:s'),
+                    'accept_date' => null
+                ];
+    
+                // Simpan pembagian tugas ke dalam tabel shared
+                $this->sharedModel->insert($sharedData);
+            }
+    
+            return redirect()->to('/tugas/detail/' . $id)->with('success', 'Tugas berhasil dibagikan ke anggota grup!');
+        }
+    
+        if ($sharedTo && $sharedType == 'user') {
+            // Proses bagi tugas ke pengguna individu
             $sharedData = [
-                'id_tugas' => $id,
-                'shared_by' => $userId,
-                'shared_to' => $sharedTo,
-                'shared_type' => $sharedType,
-                'shared_date' => date('Y-m-d H:i:s'),
+                'id_tugas'    => $id,
+                'shared_by'   => $userId,
+                'shared_to'   => $sharedTo,
+                'shared_type' => 'user',
+                'accepted'    => 'pending',  // Status default
+                'share_date'  => date('Y-m-d H:i:s'),
+                'accept_date' => null
             ];
-
-            // Simpan data pembagian tugas ke tabel shared
+    
+            // Simpan pembagian tugas ke dalam tabel shared
             $this->sharedModel->insert($sharedData);
-
+    
             return redirect()->to('/tugas/detail/' . $id)->with('success', 'Tugas berhasil dibagikan!');
         } else {
             return redirect()->to('/tugas/detail/' . $id)->with('error', 'Silakan pilih pengguna atau grup yang valid untuk membagikan tugas.');
         }
     }
+    
 
 
     // Fungsi untuk menyimpan pembagian tugas
@@ -262,8 +306,7 @@ class Tugas extends BaseController
         return redirect()->to('/tugas/detail/' . $id)->with('success', 'Tugas berhasil ditandai sebagai selesai.');
     }
 
-    // Menampilkan daftar tugas
-   // Menampilkan daftar tugas
+
 // Menampilkan daftar tugas
 public function index()
 {
@@ -272,14 +315,10 @@ public function index()
     $keyword = $this->request->getGet('keyword'); // Jika ada pencarian kata kunci
     $perPage = 10; // Set jumlah data per halaman
 
-    // Cek apakah userId ada (jika belum login)
-    if (!$userId) {
-        return redirect()->to('/login')->with('error', 'Anda harus login terlebih dahulu.');
-    }
+ 
 
     // Query untuk mengambil tugas yang hanya dibuat oleh user yang sedang login
-    $query = $this->tugasModel->where('creator_id', $userId); // Ganti id_user dengan creator_id
-
+    $query = $this->tugasModel->where('creator_id', $userId);
     if ($keyword) {
         $query->like('tugas', $keyword); // Jika ada kata kunci pencarian, cari tugas yang sesuai
     }
@@ -297,6 +336,20 @@ public function index()
 
     return view('tugas/index', $data);
 }
+
+public function dashboard() {
+    $userId = session()->get('id_user'); // Ambil id_user dari session
+    $tugasModel = new TugasModel();
+    
+    // Ambil data tugas yang deadline-nya mendekati
+    $tugasMendekatiDeadline = $tugasModel->getTugasMendekatiDeadline($userId);
+
+    // Kirim data ke view
+    return view('layouts/dashboard', [
+        'tugasMendekatiDeadline' => $tugasMendekatiDeadline
+    ]);
+}
+
 
 
 }

@@ -36,7 +36,7 @@ $routes->post('tugas/update/(:num)', 'tugas::update/$1');
 $routes->post('tugas/ubahStatus/(:num)', 'Tugas::ubahStatus/$1');
 $routes->get('tugas/delete/(:num)', 'Tugas::delete/$1');
 $routes->get('tugas/detail/(:num)', 'Tugas::detail/$1');
-$routes->get('tugas/shared/(:num)', 'Tugas::share/$1');
+$routes->post('tugas/share/(:num)', 'Tugas::share/$1');
 $routes->post('tugas/upload/(:num)', 'Tugas::upload/$1');
 $routes->post('tugas/storeShared/(:num)', 'Tugas::storeShared/$1');
 

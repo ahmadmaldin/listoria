@@ -9,7 +9,7 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>No</th>
                         <th>Tugas</th>
                         <th>Tanggal</th>
                         <th>Sisa Waktu</th>
@@ -24,35 +24,39 @@
                             <td><?= esc($item['tugas']) ?></td>
                             <td><?= esc($item['tanggal']) ?> <?= esc($item['waktu']) ?></td>
                             <td>
-                                <?php
-                                    $deadline = strtotime($item['tanggal'] . ' ' . $item['waktu']);
-                                    $now = time();
-                                    $selisih = $deadline - $now;
+    <?php
+        $now = new DateTime();
+        $deadline = new DateTime($item['tanggal'] . ' ' . $item['waktu']);
+        if ($deadline > $now) {
+            $interval = $now->diff($deadline);
+            $jam = $interval->h + ($interval->d * 24);
+            $menit = $interval->i;
 
-                                    if ($selisih > 0) {
-                                        $hari = floor($selisih / 86400);
-                                        $jam = floor(($selisih % 86400) / 3600);
-                                        $menit = floor(($selisih % 3600) / 60);
+            // Tambah badge berdasarkan waktu yang tersisa
+            if ($jam < 1) {
+                $warna = 'bg-danger';
+            } elseif ($jam < 3) {
+                $warna = 'bg-warning text-dark';
+            } else {
+                $warna = 'bg-info text-dark';
+            }
 
-                                        echo '<span class="badge bg-info text-dark">⏳ ';
-                                        if ($hari > 0) echo $hari . 'h ';
-                                        if ($jam > 0) echo $jam . 'j ';
-                                        if ($menit > 0) echo $menit . 'm ';
-                                        echo 'lagi</span>';
-                                    } else {
-                                        $selisih = abs($selisih);
-                                        $hari = floor($selisih / 86400);
-                                        $jam = floor(($selisih % 86400) / 3600);
-                                        $menit = floor(($selisih % 3600) / 60);
+            echo "<span class='badge $warna'>⏳ ";
+            if ($jam > 0) echo $jam . 'j ';
+            if ($menit > 0) echo $menit . 'm ';
+            echo "lagi</span>";
+        } else {
+            $interval = $deadline->diff($now);
+            $jam = $interval->h + ($interval->d * 24);
+            $menit = $interval->i;
+            echo "<span class='badge bg-secondary'>⚠️ Telat ";
+            if ($jam > 0) echo $jam . 'j ';
+            if ($menit > 0) echo $menit . 'm ';
+            echo "</span>";
+        }
+    ?>
+</td>
 
-                                        echo '<span class="badge bg-danger">⚠️ Telat ';
-                                        if ($hari > 0) echo $hari . 'h ';
-                                        if ($jam > 0) echo $jam . 'j ';
-                                        if ($menit > 0) echo $menit . 'm ';
-                                        echo '</span>';
-                                    }
-                                ?>
-                            </td>
                             <td>
                                 <span class="badge bg-label-primary"><?= esc($item['status']) ?></span>
                             </td>
