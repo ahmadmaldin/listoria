@@ -28,19 +28,23 @@ $routes->get('/dashboard', 'Home::index', $authFilter);
 $routes->get('about', 'Home::about', $allRole);
 
 // tugas
-$routes->get('tugas', 'Tugas::index');
+$routes->get('tugas', 'tugas::index');
 $routes->get('tugas/create', 'tugas::create');
 $routes->post('tugas/store', 'tugas::store');
 $routes->get('tugas/edit/(:num)', 'tugas::edit/$1');
-$routes->post('tugas/update/(:num)', 'tugas::update/$1');
+$routes->post('tugas/update/(:num)', 'Tugas::update/$1');
 $routes->post('tugas/ubahStatus/(:num)', 'Tugas::ubahStatus/$1');
 $routes->get('tugas/delete/(:num)', 'Tugas::delete/$1');
 $routes->get('tugas/detail/(:num)', 'Tugas::detail/$1');
-$routes->post('tugas/share/(:num)', 'Tugas::share/$1');
 $routes->post('tugas/upload/(:num)', 'Tugas::upload/$1');
-$routes->post('tugas/storeShared/(:num)', 'Tugas::storeShared/$1');
 
 
+// Routes untuk berbagi tugas
+$routes->get('tugas/sharedtome/(:num)', 'Tugas::sharedToMe/$1'); // Halaman tugas yang dibagikan ke pengguna
+$routes->post('tugas/shareTaskToFriend/(:num)', 'Tugas::shareTaskToFriend/$1'); // Proses berbagi tugas ke teman
+$routes->get('tugas/share/(:num)', 'Tugas::share/$1'); // Halaman untuk memilih teman/grup yang akan dibagikan tugas
+$routes->post('tugas/processShare/(:num)', 'Tugas::processShare/$1');
+$routes->get('/sharedtome', 'Tugas::sharedToMe');
 
 //user
 $routes->get('user', 'user::index');
@@ -82,11 +86,6 @@ $routes->get('/member/edit/(:num)', 'member::edit/$1');
 $routes->post('/member/update/(:num)', 'member::update/$1');
 $routes->get('/member/delete/(:num)', 'member::delete/$1');
 
-//shared
-$routes->post('/shared/store', 'shared::store', $user);  // Rute POST untuk menyimpan data yang dibagikan.
-$routes->post('/shared/delete/(:num)', 'shared::delete/$1', $user);  // Rute POST untuk menghapus data yang dibagikan berdasarkan ID yang diteruskan.
-$routes->post('shared/shareToGroup/(:num)', 'shared::shareToGroup/$1', $user);  // Rute POST untuk membagikan data ke grup berdasarkan ID yang diteruskan.
-$routes->get('shared/updateStatusNext/(:num)', 'shared::updateStatusNext/$1', $user);  // Rute GET untuk memperbarui status berbagi ke status berikutnya berdasarkan ID yang diteruskan.
 
 
 // friendship
@@ -96,4 +95,4 @@ $routes->post('friendship/add', 'Friendship::add', $user);  // Rute POST untuk m
 $routes->get('friendship/accept/(:num)', 'Friendship::accept/$1', $user);  // Rute GET untuk menerima pertemanan berdasarkan ID yang diteruskan.
 $routes->get('friendship/decline/(:num)', 'Friendship::decline/$1', $user);  // Rute GET untuk menolak pertemanan berdasarkan ID yang diteruskan.
 $routes->get('friendship/remove/(:num)', 'Friendship::remove/$1', $user);  // Rute GET untuk menghapus pertemanan berdasarkan ID yang diteruskan.
-
+$routes->post('friend/sendRequest', 'FriendController::sendRequest');

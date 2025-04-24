@@ -6,8 +6,8 @@
 
     <div class="card">
         <div class="card-body">
-            <form action="<?= base_url('tugas/update/' . $tugas['id']) ?>" method="post">
-                <?= csrf_field() ?>
+        <form action="<?= base_url('tugas/update/' . $tugas['id']) ?>" method="post">
+        <?= csrf_field() ?>
 
                 <div class="mb-3">
                     <label for="tugas" class="form-label">Nama Tugas</label>

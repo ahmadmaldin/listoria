@@ -20,9 +20,9 @@
         </a>
     </li>
     <li class="menu-item">
-        <a href="<?= site_url('/user') ?>" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-user"></i>
-            <div data-i18n="Analytics">User</div>
+        <a href="<?= site_url('/friendship') ?>" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-receipt"></i>
+            <div data-i18n="Analytics">friendship</div>
         </a>
     </li>
 
@@ -33,13 +33,6 @@
         </a>
     </li>
 
-    <li class="menu-item">
-        <a href="<?= site_url('/friendship') ?>" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-receipt"></i>
-            <div data-i18n="Analytics">Friendship</div>
-        </a>
-    </li>
-    
     <li class="menu-item">
         <a href="<?= site_url('/backup') ?>" class="menu-link">
             <i class="menu-icon tf-icons bx bx-cloud-download"></i>

@@ -6,68 +6,81 @@ use CodeIgniter\Model;
 
 class FriendshipModel extends Model
 {
-    protected $table = 'friendships';
+    protected $table = 'friendship';
     protected $primaryKey = 'id';
     protected $allowedFields = ['id_user', 'id_friend', 'status'];
 
-    // Menambahkan permintaan pertemanan
+    /**
+     * Tambah permintaan pertemanan
+     */
     public function addFriendRequest($userId, $friendId)
     {
-        $data = [
+        return $this->insert([
             'id_user' => $userId,
             'id_friend' => $friendId,
             'status' => 'pending',
-        ];
-
-        return $this->insert($data);
+        ]);
     }
 
-    // Mendapatkan daftar teman (yang sudah accepted), dengan informasi username dari tabel user
+    /**
+     * Ambil semua teman dari user yang statusnya sudah accepted
+     */
     public function getFriends($userId)
     {
-        return $this->select('user.username, user.photo, friendships.*')
-            ->join('user', 'user.id_user = IF(friendships.id_user = ' . $userId . ', friendships.id_friend, friendships.id_user)')
-            ->where('friendships.status', 'accepted')
+        return $this->db->table($this->table)
+            ->select('user.id_user, user.username, user.photo, friendship.id, friendship.id_user, friendship.id_friend')
+            ->join('user', "user.id_user = IF(friendship.id_user = $userId, friendship.id_friend, friendship.id_user)")
+            ->where('friendship.status', 'accepted')
             ->groupStart()
-                ->where('friendships.id_user', $userId)
-                ->orWhere('friendships.id_friend', $userId)
+                ->where('friendship.id_user', $userId)
+                ->orWhere('friendship.id_friend', $userId)
             ->groupEnd()
-            ->findAll();
+            ->get()->getResultArray();
     }
 
-    // Mendapatkan daftar permintaan masuk yang pending (dikirim ke user login)
+    /**
+     * Ambil daftar permintaan masuk (pending) ke user yang sedang login
+     */
     public function getFriendRequests($userId)
     {
-        return $this->select('user.username, user.photo, friendships.*')
-            ->join('user', 'user.id_user = friendships.id_user')
-            ->where('friendships.id_friend', $userId)
-            ->where('friendships.status', 'pending')
+        return $this->select('user.id_user, user.username, user.photo, friendship.id')
+            ->join('user', 'user.id_user = friendship.id_user')
+            ->where('friendship.id_friend', $userId)
+            ->where('friendship.status', 'pending')
             ->findAll();
     }
 
-    // Mendapatkan daftar permintaan pertemanan yang dikirim user login dan masih pending
+    /**
+     * Ambil daftar permintaan pertemanan yang dikirim user dan masih pending
+     */
     public function getSentRequests($userId)
     {
-        return $this->select('user.username, user.photo, friendships.*')
-            ->join('user', 'user.id_user = friendships.id_friend')
-            ->where('friendships.id_user', $userId)
-            ->where('friendships.status', 'pending')
+        return $this->select('user.id_user, user.username, user.photo, friendship.id')
+            ->join('user', 'user.id_user = friendship.id_friend')
+            ->where('friendship.id_user', $userId)
+            ->where('friendship.status', 'pending')
             ->findAll();
     }
 
-    // Menerima permintaan pertemanan
-    public function acceptFriendRequest($requestId)
+    /**
+     * Menerima permintaan pertemanan
+     */
+    public function acceptFriendRequest($friendshipId)
     {
-        return $this->update($requestId, ['status' => 'accepted']);
+        return $this->update($friendshipId, ['status' => 'accepted']);
     }
 
-    // Menolak permintaan pertemanan
-    public function declineFriendRequest($requestId)
+    /**
+     * Menolak permintaan pertemanan
+     */
+    public function declineFriendRequest($friendshipId)
     {
-        return $this->delete($requestId);
+        return $this->delete($friendshipId);
     }
 
-    // Menghapus pertemanan berdasarkan ID pertemanan
+    /**
+     * Hapus pertemanan berdasarkan ID friendship
+     */
     public function removeFriendById($friendshipId)
     {
         return $this->delete($friendshipId);

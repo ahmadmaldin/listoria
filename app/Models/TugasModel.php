@@ -25,17 +25,46 @@ class TugasModel extends Model
             ->orLike('status', $keyword)
             ->paginate($perPage);
     }
-
-    public function getTugasMendekatiDeadline($userId) {
-        $builder = $this->db->table('tugas');
-        return $builder->where('id_user', $userId)
-                       ->where('date_due >=', date('Y-m-d'))
-                       ->where('time_due >=', date('H:i:s'))
-                       ->orderBy('date_due', 'ASC')
-                       ->orderBy('time_due', 'ASC')
-                       ->limit(5)
-                       ->get()
-                       ->getResult();
+    public function getDashboardData()
+    {
+        return [
+            'todo' => $this->where('status', 'to do')->countAllResults(),
+            'doing' => $this->where('status', 'doing')->countAllResults(),
+            'selesai' => $this->where('status', 'selesai')->countAllResults(),
+            'batal' => $this->where('status', 'batal')->countAllResults()
+        ];
     }
-    
+
+    public function getUpcomingTasks()
+    {
+        return $this->where('status !=', 'selesai')
+                    ->where('date_due >=', date('Y-m-d'))
+                    ->orderBy('date_due', 'ASC')
+                    ->limit(5)
+                    ->findAll();
+    }
+
+    public function getCalendarEvents()
+    {
+        $this->select('tugas, date_due, time_due');
+        $this->whereIn('status', ['to do', 'doing']);
+        $this->where('date_due IS NOT NULL', null, false);
+
+        $query = $this->get();
+        $events = [];
+
+        foreach ($query->getResult() as $row) {
+            $start = $row->date_due;
+            if (!empty($row->time_due)) {
+                $start .= 'T' . $row->time_due;
+            }
+
+            $events[] = [
+                'title' => $row->tugas,
+                'start' => $start
+            ];
+        }
+
+        return $events;
+    }
 }

@@ -64,17 +64,17 @@ class GroupModel extends Model
     
     public function isUserInGroup($userId, $groupId)
     {
-        return $this->db->table('groupmembers')
+        return $this->db->table('member')
                         ->where('user_id', $userId)
                         ->where('id_groups', $groupId)
                         ->countAllResults() > 0;
     }
     
-    public function getGroupMembers($groupId)
+    public function getmember($groupId)
 {
-    return $this->db->table('groupmembers')
-                    ->join('user', 'user.id_user = groupmembers.user_id')
-                    ->where('groupmembers.id_groups', $groupId)
+    return $this->db->table('member')
+                    ->join('user', 'user.id_user = member.user_id')
+                    ->where('member.id_groups', $groupId)
                     ->get()
                     ->getResultArray();
 }
@@ -91,10 +91,20 @@ public function isGroupCreator($userId, $groupId)
 public function isUserGroupMember($userId, $groupId)
 {
     // Mengecek apakah pengguna adalah anggota grup
-    return $this->db->table('groupmembers')
+    return $this->db->table('member')
                     ->where('user_id', $userId)  // ID user yang sedang login
                     ->where('id_groups', $groupId) // ID grup yang dipilih
                     ->countAllResults() > 0;
 }
+
+public function getUserGroups($userId)
+{
+    return $this->db->table('member')
+        ->join('groups', 'groups.id_groups = member.id_groups')
+        ->where('member.user_id', $userId)
+        ->get()
+        ->getResultArray();
+}
+
 
 }
