@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body {
+  font-family: 'Press Start 2P', cursive;
+  background: linear-gradient(135deg, #A3D2CA, #F1C6B9); /* Nuansa warna lembut */
+  background-size: cover;
+  color: #fff;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.container-xxl {
+  padding: 20px;
+}
+
+.card {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 15px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.4);
+  padding: 20px;
+  color: #fff;
+}
+
+.card-header {
+  background: rgba(0, 0, 0, 0.8);
+  border-bottom: 2px solid #ffffff;
+  font-size: 18px;
+  color: #A8DADC;
+}
+
+.card-title {
+  font-size: 22px;
+  color: #ffcc99; /* Warna lembut untuk judul */
+}
+
+.menu-link {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.menu-link:hover {
+  color: #F1C6B9;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.menu-icon {
+  color: #ffcc99;
+  margin-right: 10px;
+}
+
+.list-group-item {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.list-group-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.badge {
+  background-color: #ff3366;
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.star {
+  color: #ffcc00;
+  font-size: 20px;
+}
+
+@keyframes glowing {
+  0% {
+    box-shadow: 0 0 5px #ffcc99, 0 0 10px #ffcc99, 0 0 15px #ffcc99, 0 0 20px #ff3366;
+  }
+  50% {
+    box-shadow: 0 0 5px #ffcc99, 0 0 10px #ffcc99, 0 0 15px #ffcc99, 0 0 30px #ff3366;
+  }
+  100% {
+    box-shadow: 0 0 5px #ffcc99, 0 0 10px #ffcc99, 0 0 15px
+  }
+
+}

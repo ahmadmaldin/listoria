@@ -141,7 +141,7 @@
       </tr>
     </thead>
     <tbody>
-      <?php $no = 1; foreach ($attachment as $b): ?>
+      <?php $no = 1; foreach ($attachments as $b): ?>
         <tr>
           <td><?= $no++ ?></td>
           <td><?= ucfirst($b['type']) ?></td>
@@ -172,5 +172,33 @@
     </tbody>
   </table>
 </div>
+
+<hr></hr>
+<h3>Daftar Penerima Tugas</h3>
+<?php if (!empty($sharedUsers)) : ?>
+    <div class="table-responsive">
+        <table class="table table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>ID User</th>
+                    <th>Nama User</th>
+                    <th>Tanggal Dibagikan</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($sharedUsers as $user) : ?>
+                    <tr>
+                        <td><?= esc($user['id_user']) ?></td>
+                        <td><?= esc($user['username']) ?></td>
+                        <td><?= date('d-m-Y H:i', strtotime($user['share_date'])) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+<?php else : ?>
+    <p>Tugas ini belum dibagikan ke siapa pun.</p>
+<?php endif; ?>
+
 
 <?= $this->endSection() ?>

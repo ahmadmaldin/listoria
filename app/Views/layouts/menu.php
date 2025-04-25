@@ -1,50 +1,57 @@
 <ul class="menu-inner py-1">
     <li class="menu-item">
         <a href="<?= base_url('/dashboard') ?>" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-home-circle"></i>
-            <div data-i18n="Analytics">Dashboard</div>
+            <i class="menu-icon tf-icons bx bx-home"></i>
+            <div>Dashboard</div>
         </a>
     </li>
 
     <li class="menu-item">
-    <a href="<?= base_url('tugas/create') ?>" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-plus-circle"></i>
-        <div>Tambah Tugas</div>
-    </a>
-</li>
+        <a href="<?= base_url('tugas/create') ?>" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-task"></i>
+            <div>Tambah Tugas</div>
+        </a>
+    </li>
 
     <li class="menu-item">
         <a href="<?= site_url('/tugas') ?>" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-user"></i>
-            <div data-i18n="Analytics">Tugas</div>
+            <i class="menu-icon tf-icons bx bx-list-check"></i>
+            <div>Daftar Tugas</div>
         </a>
     </li>
+
+    <li class="menu-item">
+        <a href="<?= site_url('/sharedtome') ?>" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-share-alt"></i>
+            <div>Di Bagikan</div>
+        </a>
+    </li>
+
     <li class="menu-item">
         <a href="<?= site_url('/friendship') ?>" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-receipt"></i>
-            <div data-i18n="Analytics">friendship</div>
+            <i class="menu-icon tf-icons bx bx-user-plus"></i>
+            <div>Friendship</div>
         </a>
     </li>
 
     <li class="menu-item">
         <a href="<?= site_url('/groups') ?>" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-receipt"></i>
-            <div data-i18n="Analytics">Groups</div>
+            <i class="menu-icon tf-icons bx bx-group"></i>
+            <div>Groups</div>
         </a>
     </li>
 
     <li class="menu-item">
         <a href="<?= site_url('/backup') ?>" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-cloud-download"></i>
-            <div data-i18n="Analytics">Backup DB</div>
+            <i class="menu-icon tf-icons bx bx-download"></i>
+            <div>Backup DB</div>
         </a>
     </li>
 
     <li class="menu-item">
         <a href="<?= site_url('/logout') ?>" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-log-out-circle"></i>
-            <div data-i18n="Analytics">Logout</div>
+            <i class="menu-icon tf-icons bx bx-log-out"></i>
+            <div>Logout</div>
         </a>
     </li>
-
-
+</ul>

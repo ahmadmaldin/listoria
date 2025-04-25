@@ -34,9 +34,12 @@
     <link rel="stylesheet" href="<?= base_url('assets/vendor/libs/apex-charts/apex-charts.css'); ?>" />
     <script src="<?= base_url('assets/vendor/js/helpers.js'); ?>"></script>
     <script src="<?= base_url('assets/js/config.js'); ?>"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 </head>
 
 <body>
+    
     <!-- Layout wrapper -->
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
@@ -65,14 +68,36 @@
                             <i class="bx bx-menu bx-sm"></i>
                         </a>
                     </div>
-
                     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-                    <title><?= $title ?? 'To-Do List' ?></title>
-                    <ul class="navbar-nav flex-row align-items-center ms-auto">
-                            Selamat Siang,&nbsp<b><?= session()->get('username') ?></b>
-                        </ul>
-                    </div>
+    <title><?= $title ?? 'To-Do List' ?></title>
+    <ul class="navbar-nav flex-row align-items-center ms-auto">
+        <!-- Menampilkan Nama Pengguna -->
+        Selamat Siang,&nbsp;<b><?= session()->get('username') ?></b>
+
+        <!-- Dropdown Foto Profil Pengguna -->
+        <?php
+            // Mengambil foto pengguna dari session, jika tidak ada gunakan foto default
+            $photo = session()->get('photo') ?? 'default.jpg';
+        ?>
+        <li class="nav-item ms-3 dropdown">
+            <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="<?= base_url('uploads/user/' . $photo) ?>" alt="Profil" class="rounded-circle" width="40" height="40">
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="<?= base_url('user/profile') ?>">My Profile</a></li>
+                <li><a class="dropdown-item" href="<?= base_url('user/edit') ?>">Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="<?= base_url('logout') ?>">Log Out</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+
+                    
                 </nav>
+
+                
 
                 <!-- Content -->
 
@@ -126,6 +151,9 @@
         <script src="<?= base_url('assets/js/main.js'); ?>"></script>
         <script src="<?= base_url('assets/js/dashboards-analytics.js'); ?>"></script>
         <script async defer src="https://buttons.github.io/buttons.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 </body>
 
 </html>

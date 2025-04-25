@@ -34,7 +34,7 @@ $routes->post('tugas/store', 'tugas::store');
 $routes->get('tugas/edit/(:num)', 'tugas::edit/$1');
 $routes->post('tugas/update/(:num)', 'Tugas::update/$1');
 $routes->post('tugas/ubahStatus/(:num)', 'Tugas::ubahStatus/$1');
-$routes->get('tugas/delete/(:num)', 'Tugas::delete/$1');
+$routes->get('tugas/delete/(:num)', 'tugas::delete/$1');
 $routes->get('tugas/detail/(:num)', 'Tugas::detail/$1');
 $routes->post('tugas/upload/(:num)', 'Tugas::upload/$1');
 
@@ -50,9 +50,11 @@ $routes->get('/sharedtome', 'Tugas::sharedToMe');
 $routes->get('user', 'user::index');
 $routes->get('user/create', 'user::create');
 $routes->post('user/store', 'user::store');
-$routes->get('user/edit/(:num)', 'user::edit/$1');
-$routes->post('user/update/(:num)', 'user::update/$1');
+$routes->get('user/edit/(:num)', 'User::edit/$1');
+$routes->post('user/update/(:num)', 'User::update/$1');
+
 $routes->get('user/delete/(:num)', 'user::delete/$1');
+$routes->get('user/profile', 'User::profile');
 
 
 /// attachment
@@ -94,5 +96,4 @@ $routes->get('friendship/index', 'Friendship::index', $user);  // Rute GET untuk
 $routes->post('friendship/add', 'Friendship::add', $user);  // Rute POST untuk menambah pertemanan.
 $routes->get('friendship/accept/(:num)', 'Friendship::accept/$1', $user);  // Rute GET untuk menerima pertemanan berdasarkan ID yang diteruskan.
 $routes->get('friendship/decline/(:num)', 'Friendship::decline/$1', $user);  // Rute GET untuk menolak pertemanan berdasarkan ID yang diteruskan.
-$routes->get('friendship/remove/(:num)', 'Friendship::remove/$1', $user);  // Rute GET untuk menghapus pertemanan berdasarkan ID yang diteruskan.
-$routes->post('friend/sendRequest', 'FriendController::sendRequest');
+$routes->get('friendship/delete/(:num)', 'Friendship::delete/$1', $user);  // Rute GET untuk menghapus pertemanan berdasarkan ID yang diteruskan.

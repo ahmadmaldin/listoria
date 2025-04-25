@@ -1,0 +1,116 @@
+/* Menu Sidebar */
+.sidebar {
+    background-color: #1a1a2e;
+    color: #ffffff;
+    width: 250px;
+    padding: 20px;
+    box-shadow: 2px 0 10px rgba(0, 255, 255, 0.3);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+  
+  .sidebar h2 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 20px;
+    color: #ffcc00;
+    text-shadow: 1px 1px 5px #ff00ff;
+    margin-bottom: 30px;
+  }
+  
+  /* Daftar Menu */
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar ul li {
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background-color: #2f2f3f;
+    box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.2);
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  /* Menu Link */
+  .sidebar ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 16px;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 3px #ffcc00;
+  }
+  
+  /* Hover effect on menu items */
+  .sidebar ul li:hover {
+    background-color: #00ccff;
+    transform: scale(1.05);
+  }
+  
+  .sidebar ul li a:hover {
+    color: #ff3300;
+    text-shadow: 1px 1px 5px #ff00ff;
+  }
+  
+  /* Icon on menu */
+  .sidebar ul li i {
+    margin-right: 10px;
+    font-size: 18px;
+    color: #33ccff;
+    transition: color 0.3s;
+  }
+  
+  .sidebar ul li:hover i {
+    color: #ff6600; /* Neon orange */
+  }
+  
+  /* Active Menu Item */
+  .sidebar ul li.active {
+    background-color: #ff00ff;
+    color: #ffffff;
+  }
+  
+  .sidebar ul li.active a {
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px #ff00ff;
+  }
+  
+  .sidebar ul li.active i {
+    color: #ffcc00; /* Neon yellow for active item */
+  }
+  
+  /* Submenu */
+  .sidebar ul li ul {
+    padding-left: 20px;
+  }
+  
+  .sidebar ul li ul li {
+    background-color: #3a3a52;
+    padding-left: 30px;
+  }
+  
+  .sidebar ul li ul li a {
+    font-size: 14px;
+    text-shadow: 1px 1px 3px #ffcc00;
+  }
+  
+  /* Animation effect for sidebar */
+  @keyframes slideIn {
+    from {
+      left: -250px;
+    }
+    to {
+      left: 0;
+    }
+  }
+  
+  .sidebar {
+    animation: slideIn 0.3s ease-in-out;
+  }
+  

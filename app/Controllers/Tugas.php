@@ -16,6 +16,7 @@ class Tugas extends BaseController
     protected $attachmentModel;
     protected $userModel;
     protected $groupModel;
+    protected $sharedModel;
 
     public function __construct()
     {
@@ -23,6 +24,8 @@ class Tugas extends BaseController
         $this->attachmentModel = new AttachmentModel();
         $this->userModel       = new UserModel();
         $this->groupModel      = new GroupModel();
+        $this->sharedModel      = new SharedModel();
+
     }
 
     public function create()
@@ -77,12 +80,12 @@ class Tugas extends BaseController
 }
 
 
-    public function delete($id)
-    {
-        $this->tugasModel->delete($id);
-        session()->setFlashdata('success', 'Tugas berhasil dihapus!');
-        return redirect()->to('/tugas');
-    }
+public function delete($id)
+{
+    $this->tugasModel->delete($id);
+    session()->setFlashdata('success', 'Tugas berhasil dihapus!');
+    return redirect()->to('/tugas');
+}
 
     public function upload()
     {
@@ -111,7 +114,7 @@ class Tugas extends BaseController
     {
         $attachmentModel = new AttachmentModel();
         $userModel = new UserModel();
-        $groupsModel = new GroupsModel();
+        $groupModel = new GroupModel();
         $sharedModel = new SharedModel();
 
         // Ambil data tugas
@@ -126,14 +129,14 @@ class Tugas extends BaseController
 
         // Mengambil daftar teman dan grup
         $users = $userModel->findAll();
-        $groups = $groupsModel->findAll();
+        $groups = $groupModel->findAll();
 
         // Mengambil pengguna yang telah berbagi tugas
         $sharedUsers = $sharedModel
-            ->join('user', 'user.id_user = shared.id_user')
-            ->where('shared.id_tugas', $id)
-            ->findAll();
-
+        ->join('user', 'user.id_user = shared.id_user')
+        ->where('shared.id_tugas', $id)
+        ->findAll();
+    
         return view('tugas/detail', [
             'title' => 'Detail Tugas',
             'tugas' => $tugas,

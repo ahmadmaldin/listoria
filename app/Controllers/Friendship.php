@@ -82,9 +82,14 @@ class Friendship extends BaseController
     }
 
     // Menghapus pertemanan
-    public function remove($id)
+    public function delete($id)
     {
-        $this->friendshipModel->removeFriendById($id);
-        return redirect()->to('/friendship')->with('success', 'Pertemanan berhasil dihapus.');
+        // Logika untuk menghapus persahabatan berdasarkan ID
+        if ($this->friendshipModel->delete($id)) {
+            return redirect()->to('/friendship'); // Redirect ke halaman daftar persahabatan
+        } else {
+            return redirect()->back()->with('error', 'Gagal menghapus persahabatan.');
+        }
     }
+    
 }

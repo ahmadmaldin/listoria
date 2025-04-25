@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body {
+  font-family: 'Press Start 2P', cursive;
+  background: linear-gradient(135deg, #A3D2CA, #F1C6B9); /* Nuansa warna lembut */
+  background-size: cover;
+  color: #fff;
+  font-size: 12px; /* Ukuran font lebih kecil */
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.container-xxl {
+  padding: 15px; /* Lebih kecil dari sebelumnya */
+}
+
+.card {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 12px; /* Mengurangi radius */
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.4); /* Mengurangi shadow */
+  padding: 15px; /* Ukuran padding lebih kecil */
+  color: #fff;
+}
+
+.card-header {
+  background: rgba(0, 0, 0, 0.8);
+  border-bottom: 2px solid #ffffff;
+  font-size: 16px; /* Ukuran font lebih kecil */
+  color: #A8DADC;
+}
+
+.card-title {
+  font-size: 18px; /* Ukuran font lebih kecil */
+  color: #ffcc99; /* Warna lembut untuk judul */
+}
+
+.menu-link {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 12px; /* Ukuran font lebih kecil */
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.menu-link:hover {
+  color: #F1C6B9;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 6px; /* Mengurangi padding */
+}
+
+.menu-icon {
+  color: #ffcc99;
+  margin-right: 8px; /* Margin lebih kecil */
+}
+
+.list-group-item {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: #fff;
+  padding: 12px; /* Ukuran padding lebih kecil */
+  border-radius: 8px; /* Radius lebih kecil */
+  margin-bottom: 8px; /* Margin lebih kecil */
+}
+
+.list-group-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.badge {
+  background-color: #ff3366;
+  border-radius: 15px;
+  padding: 4px 8px; /* Padding lebih kecil */
+  font-size: 10px; /* Ukuran font lebih kecil */
+}
+
+.star {
+  color: #ffcc00;
+  font-size: 18px; /* Ukuran font lebih kecil */
+}
+
+@keyframes glowing {
+  0% {
+    box-shadow: 0 0 4px #ffcc99, 0 0 8px #ffcc99, 0 0 12px #ffcc99, 0 0 16px #ff3366;
+  }
+  50% {
+    box-shadow: 0 0 4px #ffcc99, 0 0 8px #ffcc99, 0 0 12px #ffcc99, 0 0 24px #ff3366;
+  }
+  100% {
+    box-shadow: 0 0 4px #ffcc99, 0 0 8px #ffcc99, 0 0 12px #ffcc99, 0 0 16px #ff3366;
+  }
+}
+
+.card:hover {
+  animation: glowing 1.5s infinite alternate;
+}

@@ -27,10 +27,10 @@
                             <?php foreach ($friends as $friend) : ?>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div class="d-flex align-items-center">
-                                        <img src="<?= base_url('uploads/friendship/' . $friend['photo']) ?>" width="30" alt="photo" class="rounded-circle me-2">
+                                        <img src="<?= base_url('uploads/user/' . $friend['photo']) ?>" width="30" alt="photo" class="rounded-circle me-2">
                                         <span><?= esc($friend['username']) ?></span>
                                     </div>
-                                    <form action="<?= base_url('friendship/remove/' . $friend['id']) ?>" method="post" onsubmit="return confirm('Hapus pertemanan ini?')">
+                                    <form action="<?= base_url('friendship/delete/' . $friend['id']) ?>" method="get" onsubmit="return confirm('Hapus pertemanan ini?')">
                                         <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                                     </form>
                                 </li>
@@ -49,7 +49,7 @@
                             <?php foreach ($friendRequests as $req) : ?>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div class="d-flex align-items-center">
-                                        <img src="<?= base_url('uploads/friendship/' . $req['photo']) ?>" width="30" alt="photo" class="rounded-circle me-2">
+                                        <img src="<?= base_url('uploads/user/' . $req['photo']) ?>" width="30" alt="photo" class="rounded-circle me-2">
                                         <span><?= esc($req['username']) ?></span>
                                     </div>
                                     <div>
@@ -71,7 +71,7 @@
                         <?php if (!empty($sentRequests)) : ?>
                             <?php foreach ($sentRequests as $sent) : ?>
                                 <li class="list-group-item d-flex align-items-center">
-                                    <img src="<?= base_url('uploads/friendship/' . $sent['photo']) ?>" width="30" alt="photo" class="rounded-circle me-2">
+                                    <img src="<?= base_url('uploads/user/' . $sent['photo']) ?>" width="30" alt="photo" class="rounded-circle me-2">
                                     <span><?= esc($sent['username']) ?> (Menunggu)</span>
                                 </li>
                             <?php endforeach; ?>

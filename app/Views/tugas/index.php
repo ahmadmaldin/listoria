@@ -70,22 +70,20 @@
                             </td>
                             <td>
                                 <div class="d-flex justify-content-center gap-1">
-                                    <a href="<?= base_url('tugas/detail/' . $item['id']) ?>" class="btn btn-sm btn-icon btn-info" title="Detail">
+                                    <a href="<?= base_url('tugas/detail/' . $item['id']) ?>" class="btn btn-sm btn-icon btn-primary" title="Detail">
                                         <i class="bx bx-detail"></i>
+                                    </a>
                                     <a href="<?= base_url('tugas/share/' . $item['id']) ?>" class="btn btn-sm btn-icon btn-info" title="Share">
                                         <i class="bx bx-share"></i>
                                     </a>
                                     <a href="<?= base_url('tugas/edit/' . $item['id']) ?>" class="btn btn-sm btn-icon btn-warning" title="Edit">
                                         <i class="bx bx-edit"></i>
                                     </a>
-                                    <form action="<?= base_url('tugas/delete/' . $item['id']) ?>" method="post" onsubmit="return confirm('Yakin ingin menghapus tugas ini?')" style="display: inline;">
-                                        <?= csrf_field() ?>
-                                    
-                                    
-                                        <button type="submit" class="btn btn-sm btn-icon btn-danger" title="Hapus">
-                                            <i class="bx bx-trash"></i>
-                                        </button>
-                                    </form>
+                                    <a href="<?= base_url('tugas/delete/' . $item['id']) ?>" class="btn btn-sm btn-icon btn-warning" title="delete">
+                                        <i class="bx bx-trash"></i>
+                                    </a>
+
+
                                 </div>
                             </td>
                         </tr>

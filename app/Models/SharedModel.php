@@ -8,7 +8,7 @@ class SharedModel extends Model
     protected $primaryKey = 'id_shared';
 
     protected $allowedFields = [
-        'id_tugas', 'id_user', 'shared_by_user_id', 'accepted', 'share_date', 'accept_date'
+        'id_tugas', 'shared_to_id_user','shared_to_group_id','shared_by_user_id', 'accepted', 'share_date', 'accept_date'
     ];
 
     // Fungsi untuk mendapatkan tugas yang dibagikan ke pengguna
@@ -16,7 +16,7 @@ class SharedModel extends Model
     {
         return $this->select('shared.*, tugas.tugas')
                     ->join('tugas', 'tugas.id = shared.id_tugas')
-                    ->where('shared.id_user', $id_user)
+                    ->where('shared.shared_to_user_id', $shared_to_user_id)
                     ->findAll();
     }
     

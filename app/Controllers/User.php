@@ -69,16 +69,23 @@ class user extends Controller
 }
 
 
-    public function edit($id)
-    {
-        $data = [
-            'title'  => 'Tambah user',
-        ];
+public function edit($id)
+{
+    $model = new UserModel();
+    $user = $model->find($id);
 
-        $model = new UserModel();
-        $data['user'] = $model->find($id);
-        return view('user/edit', $data);
+    if (!$user) {
+        throw new \CodeIgniter\Exceptions\PageNotFoundException("User dengan ID $id tidak ditemukan");
     }
+
+    $data = [
+        'title' => 'Edit Profil',
+        'user' => $user
+    ];
+
+    return view('user/edit', $data);
+}
+
 
     public function update($id_user)
     {
@@ -88,7 +95,6 @@ class user extends Controller
 
         $data = [
             'username' => $this->request->getPost('username'),
-            'level' => $this->request->getPost('level'),
             'password' => $password
         ];
 
@@ -116,5 +122,15 @@ class user extends Controller
             return $newName;
         }
         return null;
+    }
+
+    public function profile()
+    {
+        $userId = session()->get('id_user');
+        $model = new UserModel();
+        $data['user'] = $model->find($userId);
+        $data['title'] = 'Profil Pengguna';
+
+        return view('user/profile', $data);
     }
 }

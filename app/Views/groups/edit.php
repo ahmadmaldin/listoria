@@ -1,24 +1,40 @@
 <?= $this->extend('layouts/main'); ?>
 <?= $this->section('content'); ?>
 
-<h2>Edit Grup</h2>
-<form action="<?= base_url('groups/update/' . $groups['id_groups']) ?>" method="post" enctype="multipart/form-data">
-<label>Nama Grup:</label><br>
-    <input type="text" name="group_name" value="<?= $groups['group_name'] ?>" required><br><br>
+<div class="card p-4 shadow-sm">
+    <h2 class="text-center mb-4">Edit Grup</h2>
 
-    <div class="mb-3 row">
-            <div class="col-md-10">
-                <input class="form-control" name="id_user" type="hidden" value="<?= $groups['id_user'] ?>" id="html5-text-input" required readonly />
-            </div>
+    <form action="<?= base_url('groups/update/' . $groups['id_groups']) ?>" method="post" enctype="multipart/form-data">
+        <?= csrf_field() ?>
+
+        <!-- Nama Grup -->
+        <div class="mb-3">
+            <label for="group_name" class="form-label">Nama Grup</label>
+            <input type="text" name="group_name" id="group_name" class="form-control" value="<?= $groups['group_name'] ?>" required>
         </div>
 
+        <!-- ID User (Hidden) -->
+        <div class="mb-3">
+            <input class="form-control" name="id_user" type="hidden" value="<?= $groups['id_user'] ?>" required readonly />
+        </div>
 
-    <label>Foto:</label><br>
-    <input type="file" name="photo"><br><br>
+        <!-- Foto -->
+        <div class="mb-3">
+            <label for="photo" class="form-label">Foto Grup</label>
+            <input type="file" name="photo" id="photo" class="form-control">
+        </div>
 
-    <label>Deskripsi:</label><br>
-    <textarea name="description"><?= $groups['description'] ?></textarea><br><br>
+        <!-- Deskripsi -->
+        <div class="mb-3">
+            <label for="description" class="form-label">Deskripsi</label>
+            <textarea name="description" id="description" class="form-control" rows="4"><?= $groups['description'] ?></textarea>
+        </div>
 
-    <button type="submit">Update</button>
-</form>
+        <!-- Tombol Submit -->
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary">Update Grup</button>
+        </div>
+    </form>
+</div>
+
 <?= $this->endSection(); ?>
